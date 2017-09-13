@@ -1,4 +1,4 @@
-import sys, os, re, difflib
+import sys, os
 from optparse import OptionParser , IndentedHelpFormatter
 from collections import defaultdict
 
@@ -77,16 +77,13 @@ def process_intersect_file(infile,options,outcdt):
         dist = int(cols[12]) - int(cols[2])
         if cols[12] == -1:
             cdt_dict[cols[8]].append("NA")
-            #cdt_dict[cols[0]+":"+cols[3]].append("NA")
             continue
         if cols[6] == "+":
             cdt_dict[cols[8]].append(str(dist)+":"+cols[14])
-            #cdt_dict[cols[0]+":"+cols[3]].append(str(dist)+":"+cols[14])
         elif cols[6] == "-":
             # performing flipping here!
             new_dist = (-1)*dist
             cdt_dict[cols[8]].append(str(new_dist)+":"+cols[14])
-            #cdt_dict[cols[0]+":"+cols[3]].append(str(new_dist)+":"+cols[14])
     in2.close()
     
     for k,v in cdt_dict.items():
@@ -158,10 +155,6 @@ def run():
                       help='Upstream distance, default=500')
     parser.add_option('-d', action='store', type='int', dest='down',default=500,
                       help='Downstream distance, default=500')
-    #parser.add_option('-o', action='store', type='int', dest='criteria',default=0,
-    #                  help='Sorting criteria, 0=> sort by first column of any file, 1=> sort by given chr:start-end order in the file, 2 => last column of gff')
-    #parser.add_option('-n', action='store', type='int', dest='extra',default=0,
-    #                  help='Extra N lines to add to the end of CDT')
     
     (options, args) = parser.parse_args()
     
