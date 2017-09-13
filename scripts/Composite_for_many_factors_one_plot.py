@@ -1,12 +1,9 @@
-import sys, os, re, difflib, csv
+import sys, os, re, difflib
 from operator import add
-from itertools import izip, cycle, tee
 from optparse import OptionParser , IndentedHelpFormatter
 from pylab import *
 import numpy as np
 from matplotlib.font_manager import FontProperties
-import matplotlib.ticker as plticker
-from scipy import stats
 
 ### color schema for Figure 2A
 colors = ["#FBDB0C","#FF00FF","#0000FF","#336600","#FF0000","#000000","#00FF00","#660066"] 
