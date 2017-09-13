@@ -1,12 +1,18 @@
-import sys, os
-from optparse import OptionParser , IndentedHelpFormatter
+import os
 from collections import defaultdict
+import argparse #Lila
 
+def process_file(args):
+    outdir = os.path.join(os.path.dirname(args.input_directory),"_CDT")
+    if not os.path.exists(outdir): os.makedirs(outdir)
+     
+    if not os.path.exists(args.input_directory):
+       parser.error('Path {} does not exist.'.format(args.input_directory))    
 
-def process_file(idxDir,options,outdir):
-    
-    # Prcoess refereence file first:
-    in0 = open(options.ref,"rt")
+    idxDir=args.input_directory	#Lila
+
+    # Process reference file first:
+    in0 = open(args.ref,"rt")
     tmpref = os.path.join(outdir,"tmpref.gff")
     outref = open(tmpref,"w")
     for line in in0:
@@ -14,22 +20,21 @@ def process_file(idxDir,options,outdir):
             continue
         cols = line.rstrip().split("\t")
         if cols[6] == "+" or cols[6] == ".":
-            start = int(cols[3]) - options.up
-            end = int(cols[3]) + options.down
+            start = int(cols[3]) - args.up
+            end = int(cols[3]) + args.down
             if start <= 0:
                 outref.write(cols[0]+"\t"+cols[1]+"\t"+cols[3]+"\t1\t"+str(end)+"\t"+cols[5]+"\t"+cols[6]+"\t"+cols[7]+"\t"+cols[8]+"\n")
             else:
                 outref.write(cols[0]+"\t"+cols[1]+"\t"+cols[3]+"\t"+str(start)+"\t"+str(end)+"\t"+cols[5]+"\t"+cols[6]+"\t"+cols[7]+"\t"+cols[8]+"\n")
         elif cols[6] == "-":
-            start = int(cols[3]) - options.down
-            end = int(cols[3]) + options.up
+            start = int(cols[3]) - args.down
+            end = int(cols[3]) + args.up
             if start <= 0:
                 outref.write(cols[0]+"\t"+cols[1]+"\t"+cols[3]+"\t1\t"+str(end)+"\t"+cols[5]+"\t"+cols[6]+"\t"+cols[7]+"\t"+cols[8]+"\n")
             else:
                 outref.write(cols[0]+"\t"+cols[1]+"\t"+cols[3]+"\t"+str(start)+"\t"+str(end)+"\t"+cols[5]+"\t"+cols[6]+"\t"+cols[7]+"\t"+cols[8]+"\n")
     outref.close()
     in0.close()
-    
     
     for fname in os.listdir(idxDir):
         
@@ -52,12 +57,12 @@ def process_file(idxDir,options,outdir):
         in1.close()
         out.close()
         intersect = os.path.join(outdir,"intersect.txt")
-        os.system(options.location+"intersectBed"+" -wao -a "+tmpref+" -b "+tmptab+" >"+intersect)
+        os.system(args.location+"intersectBed"+" -wao -a "+tmpref+" -b "+tmptab+" >"+intersect)
         
         # Remove tmptab as its not required anymore.
         os.system("rm "+tmptab)
         
-        process_intersect_file(intersect,options,outcdt)
+        process_intersect_file(intersect,args,outcdt)
         
         # Remove intersect as its not required anymore.
         os.system("rm "+intersect)
@@ -65,13 +70,11 @@ def process_file(idxDir,options,outdir):
         
     os.system("rm "+tmpref)
 
-
-
-def process_intersect_file(infile,options,outcdt):
+def process_intersect_file(infile,args,outcdt):
     cdt_dict = defaultdict(list)
     in2 = open(infile,"rt")
     out = open(outcdt,"w")
-    print_header(out,options)
+    print_header(out,args)
     for line in in2:
         cols = line.rstrip().split("\t")
         dist = int(cols[12]) - int(cols[2])
@@ -91,7 +94,7 @@ def process_intersect_file(infile,options,outcdt):
         line = k+"\t1"
         totaltag = 0
         if v == "NA":
-            for i in range((-1)*options.up,options.down+1):
+            for i in range((-1)*args.up,args.down+1):
                 line = line+"\t0"
                 totaltag = totaltag + 0
                 
@@ -99,7 +102,7 @@ def process_intersect_file(infile,options,outcdt):
             pos = int(val.split(":")[0])
             tag = (val.split(":"))[1]
             tmpdict[pos] = tag
-        for i in range((-1)*options.up,options.down+1):
+        for i in range((-1)*args.up,args.down+1):
             if i in tmpdict:
                 line = line+"\t"+tmpdict[i]
                 totaltag = totaltag + float(tmpdict[i])
@@ -110,68 +113,30 @@ def process_intersect_file(infile,options,outcdt):
         out.write(line+"\n")
     
     out.close()
-    
-    
 
-
-def print_header(out,options):
+def print_header(out,args):
     line = "Uniqe ID\tGWEIGHT"
-    for i in range((-1)*options.up,options.down+1):
+    for i in range((-1)*args.up,args.down+1):
         line = line+"\t"+str(i)
     out.write(line+"\n")
-    
-
-
-
-
-
-
-
-
-
-usage = '''
-input_paths may be:
-- a directory to run on all files in them
-
-example usages:
-python map_shifted_tags_to_ref.py  [OPTIONS] <path_to_shifted_index>
-'''.lstrip()
-
-
- 
-# We must override the help formatter to force it to obey our newlines in our custom description
-class CustomHelpFormatter(IndentedHelpFormatter):
-    def format_description(self, description):
-        return description
-
 
 def run():
-    parser = OptionParser(usage='%prog [options] input_paths', description=usage, formatter=CustomHelpFormatter())
-    parser.add_option('-l', action='store', type='string', dest='location',default="/usr/local/bin/",
-                      help='BEDTools location.default = /usr/local/bin/')
-    parser.add_option('-r', action='store', type='string', dest='ref',
+     #Lila
+     parser = argparse.ArgumentParser()
+     parser.add_argument('input_directory',
+                      help='Path to directory containing *.tab files')
+     parser.add_argument('ref',
                       help='Stranded reference file in gff format.')
-    parser.add_option('-u', action='store', type='int', dest='up',default=500,
-                      help='Upstream distance, default=500')
-    parser.add_option('-d', action='store', type='int', dest='down',default=500,
+     parser.add_argument('-u', type=int, dest='up',default=500,
+                     help='Upstream distance, default=500')
+     parser.add_argument('-d', type=int, dest='down',default=500,
                       help='Downstream distance, default=500')
-    
-    (options, args) = parser.parse_args()
-    
-    if not args:
-        parser.print_help()
-        sys.exit(1)
-        
-    outdir = os.path.join(os.path.dirname(args[0]),"_CDT")
-    if not os.path.exists(outdir): os.makedirs(outdir)
-    
+     parser.add_argument('-l', dest='location',default='',
+                      help='BEDTools location (if not in path)')
      
-    if not os.path.exists(args[0]):
-        parser.error('Path %s does not exist.' % args[0])
-    
-    process_file(args[0],options,outdir)
-    
-    
+     args = parser.parse_args()
+        
+     process_file(args)
     
 if __name__ == "__main__":
     run() 
