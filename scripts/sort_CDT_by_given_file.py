@@ -1,5 +1,5 @@
-from optparse import OptionParser , IndentedHelpFormatter
-import sys, os, re, operator
+from optparse import OptionParser, IndentedHelpFormatter
+import sys, os
 from collections import OrderedDict
 
 
@@ -12,7 +12,6 @@ def  process_file(cdtDir,options,outdir):
         cols = line.rstrip().split("\t")
         if options.criteria == 0:
             key = cols[0]
-            #key = line.rstrip()
             order[key] = 1
         if options.criteria == 2:
             key = cols[8]
@@ -45,7 +44,6 @@ def  process_file(cdtDir,options,outdir):
             try:
                 out.write(data[k])
             except KeyError:
-                #out.write(k+"\t0\n")
                 print "the following key does not exist "+k
                 
         

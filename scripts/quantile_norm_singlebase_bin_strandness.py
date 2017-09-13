@@ -8,7 +8,7 @@
 
 from itertools import tee, izip
 import os
-from optparse import OptionParser , IndentedHelpFormatter
+from optparse import OptionParser, IndentedHelpFormatter
 
 # Process file script will process the tab, or idx files from the working folder.
 def process_file(idxDir,options,outdir,tmpdir):

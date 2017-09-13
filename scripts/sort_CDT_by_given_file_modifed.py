@@ -1,7 +1,5 @@
 from optparse import OptionParser , IndentedHelpFormatter
-import sys, os, re, operator
-from collections import OrderedDict
-
+import sys, os
 
 def  process_file(cdtDir,options,outdir):
     input = open(options.sortbyFile,"rt")
@@ -36,13 +34,6 @@ def  process_file(cdtDir,options,outdir):
                 out.write(data[k])
             except KeyError:
                 continue
-                #line = "chr1:1-100"
-                #for i in range(1,length-1):
-                #    line = line+"\t0"
-                ## Run the loop from 0 to "no of lines to be inserted" and print it at the end of the file.
-                #for j in range(0,options.extra):
-                #    out.write(line+"\n")
-        
 
         print "completed file "+fname     
     

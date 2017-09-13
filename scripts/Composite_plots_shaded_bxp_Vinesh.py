@@ -1,9 +1,10 @@
 # Composite plot script by Rohit Reja
 # Pugh Lab, Center for Eukaryotic Gene Regulation
+# Edited by Lila Rieber - 9/13/17
 # Import libraries
-import sys, os, re
+import sys, os
 from operator import add
-from optparse import OptionParser , IndentedHelpFormatter
+from optparse import OptionParser, IndentedHelpFormatter
 from pylab import *
 import numpy as np
 import matplotlib as plt
@@ -24,9 +25,6 @@ plt.rcParams['figure.titlesize'] = 12
 list1 = {}
 ## color schema Dark-RED-ROY-G-BIV Black, 
 colors = ["#FF3333","#FF9933","#FFFF00","#4C9900","#0000FF","#4B0082","#9F00FF","#000000"]
-#colors = ["#000000","#FF0000","#FF6600","#00FF00","#0000FF","#551a8b","#663300", "#660066", "#009999"]
-#colors = ["#551a8b","#00FF00","#000000","#FF0000","#0000FF", "#660066", "#009999"]
-#colors = ["#000000","#FF6600","#00FF00","#0000FF","#551a8b","#663300", "#660066", "#009999"]
 
 def process_onestrand_files(infile,options,output_folder,ax,count):
     print "processing "+infile
@@ -44,7 +42,6 @@ def process_onestrand_files(infile,options,output_folder,ax,count):
             Y = [0]*len(X)
             continue
         
-        #tmplist = line.rstrip().split("\t")[602:1402]
         noL = noL + 1
         tmplist = line.rstrip().split("\t")[2:]
         newList = [float(x) for x in tmplist]
@@ -57,9 +54,6 @@ def process_onestrand_files(infile,options,output_folder,ax,count):
     
 
 def plot_graph(X,Y1,Y2,xmin,xmax,options,ax,label,count,noL):
-    #X = smoothListGaussian(X,options.window)
-    #Y1 = smoothListGaussian(Y1,options.window)
-    #Y1 = [float(x)/noL for x in Y1]
     X = movingaverage(X,options.window)
     Y1 = movingaverage(Y1,options.window)
     if options.norm == 1:
@@ -69,11 +63,9 @@ def plot_graph(X,Y1,Y2,xmin,xmax,options,ax,label,count,noL):
             ax.plot(X, Y1, color="#AAAAAA",label=label,lw=3.0, zorder=1)
             ax.fill_between(X,Y1,0,facecolor='#AAAAAA',edgecolor='#AAAAAA')
             ax.set_xlim(-500,500)
-            #ax.set_ylim(0,1)
     else:
         ax.plot(X, Y1, color=colors[count],label=label,lw=3.0, zorder=2)
         ax.set_xlim(-500,500)
-        #ax.set_ylim(0,1)
     
 # Moving Average smoothing
 def movingaverage(interval, window_size):
@@ -94,7 +86,6 @@ def smoothListGaussian(list,degree):
      smoothed=[0.0]*(len(list)-window)  
      for i in range(len(smoothed)):  
          smoothed[i]=sum(np.array(list[i:i+window])*weight)/sum(weight)
-     #print smoothed
      new_smooth = [int(i) for i in smoothed]
      return new_smooth  
 
@@ -136,7 +127,7 @@ def run():
     if os.path.isdir(args[0]):
         for fname in os.listdir(args[0]):
             if fname.endswith(".txt") or fname.endswith(".cdt"):
-                # intellignetly join paths without worrying about '/'
+                # intelligently join paths without worrying about '/'
                 fpath = os.path.join(args[0], fname)
                 sense_files.append(fpath)
                     
@@ -159,7 +150,6 @@ def run():
    
     csfont = {'fontname':'Comic Sans MS'} 
     ax.legend(loc=1,prop={'size':12})
-    #ax.grid()
     savefig(outfile)
        
 # Execute the main function -> run() 

@@ -1,6 +1,6 @@
 import sys, os, re, difflib
 from operator import add
-from optparse import OptionParser , IndentedHelpFormatter
+from optparse import OptionParser, IndentedHelpFormatter
 from pylab import *
 import numpy as np
 from matplotlib.font_manager import FontProperties

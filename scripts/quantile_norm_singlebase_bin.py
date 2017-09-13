@@ -2,12 +2,10 @@
 # Original script from Rohit Reja
 # Center for Eukaryotic Gene Regulation
 # The Penn State University
-from itertools import tee, izip, islice
-from operator import itemgetter
-import itertools
-import sys, os, math, operator
-from optparse import OptionParser , IndentedHelpFormatter
-from collections import OrderedDict
+# Edited by Lila Rieber - 9/13/17
+from itertools import tee, izip
+import sys, os
+from optparse import OptionParser, IndentedHelpFormatter
 
 # Process file script will process the tab, or idx files from the working folder.
 def process_file(idxDir,options,outdir,tmpdir):
@@ -41,10 +39,8 @@ def process_file(idxDir,options,outdir,tmpdir):
             for j in list(xrange(1, int(END)+1)):
                 key =  chrom+":"+str(j)
                 if key in idxData:
-                    #intervals[key] = idxData[chrom+":"+str(j)]
                     outtmp.write(key+"\t"+str(idxData[chrom+":"+str(j)])+"\n")
                 else:
-                    #intervals[key] = 0
                     outtmp.write(key+"\t0\n")
                 nooflines = nooflines + 1
                  
@@ -64,7 +60,7 @@ def process_file(idxDir,options,outdir,tmpdir):
             cols = line.rstrip().split("\t")
             list1.append(float(cols[1]))
         IN.close()
-        totals = map(sum, itertools.izip(list1, totals))
+        totals = map(sum, izip(list1, totals))
     
     for fname in os.listdir(tmpdir):
         if not fname.endswith(".tmp"):
@@ -127,12 +123,6 @@ def run():
     parser = OptionParser(usage='%prog [options] input_paths', description=usage, formatter=CustomHelpFormatter())
     parser.add_option('-g', action='store', type='string', dest='genFile',
                       help='The file containing all chromosome no and length.')
-    #parser.add_option('-s', action='store', type='int', dest='window',default=5,
-    #                  help='Size of the windows to take across the genome., Default=5')
-    #parser.add_option('-q', action='store', type='int', dest='quant',default=25,
-    #                  help='The quantile to consider for normalization. default=25')
-    #parser.add_option('-f', action='store', type='int', dest='flag',default = 1,
-    #                  help='for HS/MHS sample = 0/ For Treatment/control sample = 1.Default = 1')
     
     (options, args) = parser.parse_args()
     

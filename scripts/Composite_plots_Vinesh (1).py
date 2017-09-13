@@ -1,18 +1,13 @@
-import sys, os, re
+import sys, os
 from operator import add
-from optparse import OptionParser , IndentedHelpFormatter
+from optparse import OptionParser, IndentedHelpFormatter
 from pylab import *
 import numpy as np
-#from matplotlib.font_manager import FontProperties
-#import matplotlib.ticker as plticker
 from scipy import stats
 
 list1 = {}
 ## color schema Dark-RED-ROY-G-BIV Black, 
 colors = ["#FF3333","#FF9933","#FFFF00","#4C9900","#0000FF","#4B0082","#9F00FF","#000000"]
-#colors = ["#000000","#FF0000","#FF6600","#00FF00","#0000FF","#551a8b","#663300", "#660066", "#009999"]
-#colors = ["#551a8b","#00FF00","#000000","#FF0000","#0000FF", "#660066", "#009999"]
-#colors = ["#000000","#FF6600","#00FF00","#0000FF","#551a8b","#663300", "#660066", "#009999"]
 
 
     
@@ -33,7 +28,6 @@ def process_onestrand_files(infile,options,output_folder,ax,count):
             Y = [0]*len(X)
             continue
         
-        #tmplist = line.rstrip().split("\t")[602:1402]
         noL = noL + 1
         tmplist = line.rstrip().split("\t")[2:]
         newList = [float(x) for x in tmplist]
@@ -46,10 +40,6 @@ def process_onestrand_files(infile,options,output_folder,ax,count):
     
 
 def plot_graph(X,Y1,Y2,xmin,xmax,options,ax,label,count,noL):
-    
-    #X = smoothListGaussian(X,options.window)
-    #Y1 = smoothListGaussian(Y1,options.window)
-    #Y1 = [float(x)/noL for x in Y1]
     X = movingaverage(X,options.window)
     Y1 = movingaverage(Y1,options.window)
     if options.norm == 1:
@@ -64,7 +54,6 @@ def plot_graph(X,Y1,Y2,xmin,xmax,options,ax,label,count,noL):
     else:
         ax.plot(X, Y1, color=colors[count],label=label,lw=3.0)
         ax.set_xlim(-200,200)
-        #ax.set_ylim(0,1)
     
 
 def movingaverage(interval, window_size):
@@ -86,7 +75,6 @@ def smoothListGaussian(list,degree):
      smoothed=[0.0]*(len(list)-window)  
      for i in range(len(smoothed)):  
          smoothed[i]=sum(np.array(list[i:i+window])*weight)/sum(weight)
-     #print smoothed
      new_smooth = [int(i) for i in smoothed]
      return new_smooth  
 
@@ -112,13 +100,7 @@ def run():
     parser.add_option('-w', action='store', type='int', dest='window', default = 5,
                       help='Window size of moving average., Default=5')
     parser.add_option('-o', action='store', type='int', dest='norm',default=0,
-                      help='1=> Divde by max normalization, Default => Plot absolute occupancy.')
-    #parser.add_option('-p', action='store', type='string', dest='ppDir',
-    #                  help='Directory containing peak-pairs.')
-    #parser.add_option('-g', action='store', type='string', dest='genome_file',
-    #                  help='File with chromosome lengths.')
-    #parser.add_option('-i', action='store', type='int', dest='ilength', default = 40,
-    #                  help='interval length., Default=40')
+                      help='1=> Divide by max normalization, Default => Plot absolute occupancy.')
 
     (options, args) = parser.parse_args()
     
@@ -139,7 +121,7 @@ def run():
     if os.path.isdir(args[0]):
         for fname in os.listdir(args[0]):
             if fname.endswith(".txt") or fname.endswith(".cdt"):
-                # intellignetly join paths without worrying about '/'
+                # intelligently join paths without worrying about '/'
                 fpath = os.path.join(args[0], fname)
                 sense_files.append(fpath)
                     
@@ -148,7 +130,6 @@ def run():
         
          # Declaring plotting parameters
         f,ax = subplots(1,1,sharex='all')
-        #f.subplots_adjust(hspace=0)
         count = -1        
         
 
@@ -160,12 +141,8 @@ def run():
             if k1 == k2:
                 continue
             print "pvalue of KS-test between "+k1+" "+k2+" = "+str(stats.ks_2samp(v1,v2))
-            #print stats.ks_2samp(list1[0],list1[1])
     
-    #lfp = FontProperties()
-    #lfp.set_size(12)
     ax.legend()
-    #ax.grid()
     savefig(outfile)
        
     

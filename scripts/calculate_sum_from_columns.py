@@ -17,10 +17,10 @@ Example: python calculate_sum_from_columns.py -s .tab -c coor_location -u -150 -
 
 Created by Kuangyu Yen on 2012-04-27.
 Copyright (c) 2012 __PughLab@PSU__. All rights reserved.
+Edited by Lila Rieber on 9-13-2017
 """
 
-import sys, getopt, os, csv, re, operator
-from itertools import ifilter
+import sys, getopt, os, csv, operator
 
 #
 # define functions
@@ -94,7 +94,3 @@ if __name__ == '__main__':
   
   
   print "done!"
-  
-
-    
- 
