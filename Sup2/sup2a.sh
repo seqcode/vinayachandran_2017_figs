@@ -1,6 +1,22 @@
 set -e
 
-python ../scripts/quantile_norm_singlebase_bin.py tab_files_a 
+WD=$PWD
+
+SHARED_FILES=../shared_files
+if [ ! -d $SHARED_FILES ]
+	then
+		mkdir $SHARED_FILES
+fi
+
+CHROM_INFO=../shared_files/hg19.chrom.sizes
+if [ ! -e $CHROM_INFO ]
+	then
+		cd $SHARED_FILES
+		wget https://genome.ucsc.edu/goldenpath/help/hg19.chrom.sizes
+		cd $WD
+fi
+
+python ../scripts/quantile_norm_singlebase_bin.py tab_files_a $CHROM_INFO
 
 OUT_DIRS=(RP SAGA TFIID CUTs SUTs XUTs)
 GFFS=(RP_137_genes_TSS_Xu_2009.gff SAGA_TSS_Xu_2009_ORF_Ts_V64.gff TFIID_TSS_Xu_2009_ORF_Ts_V64.gff Xu_2009_CUTs_TSS_ONLY_V64.gff Xu_2009_SUTs_TSS_ONLY_V64.gff van_Dijk_2011_XUTs_V64_TSS_ONLY.gff)
@@ -15,5 +31,5 @@ do
 	fi
 
 	python ../scripts/map_shifted_tags_to_ref.py -u 500 -d 500 -o $OUT_DIR tab_files_a/Normalized_tab_files $GFF
-	python ../scripts/composite_plots_shaded.py -w 20 $OUT_DIR
+	python ../scripts/composite_plots.py -w 20 --shaded $OUT_DIR
 done

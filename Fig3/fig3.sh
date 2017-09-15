@@ -1,6 +1,22 @@
 set -e
 
-python ../scripts/quantile_norm_singlebase_bin.py tab_files 
+WD=$PWD
+
+SHARED_FILES=../shared_files
+if [ ! -d $SHARED_FILES ]
+	then
+		mkdir $SHARED_FILES
+fi
+
+CHROM_INFO=../shared_files/hg19.chrom.sizes
+if [ ! -e $CHROM_INFO ]
+	then
+		cd $SHARED_FILES
+		wget https://genome.ucsc.edu/goldenpath/help/hg19.chrom.sizes
+		cd $WD
+fi
+
+python ../scripts/quantile_norm_singlebase_bin.py tab_files $CHROM_INFO
 
 CDT_DIR=_CDT
 SORT_FILE=sorted_list-RPG_SAGA-act-rep-no_TFIID-act-rep-no.txt

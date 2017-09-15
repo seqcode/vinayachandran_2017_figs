@@ -1,6 +1,7 @@
 # Composite plot script by Rohit Reja
 # Pugh Lab, Center for Eukaryotic Gene Regulation
-# Edited by Lila Rieber - 9/13/17
+# Edited by Lila Rieber - 9/15/17
+
 # Import libraries
 import sys, os
 from operator import add
@@ -9,18 +10,6 @@ from pylab import *
 import numpy as np
 import matplotlib as plt
 from scipy import stats
-
-# matplotlib v2.0
-plt.rcParams['font.family'] = 'sans-serif'
-plt.rcParams['font.serif'] = 'Ubuntu'
-plt.rcParams['font.monospace'] = 'Ubuntu Mono'
-plt.rcParams['font.size'] = 10
-plt.rcParams['axes.labelsize'] = 10
-plt.rcParams['axes.labelweight'] = 'bold'
-plt.rcParams['xtick.labelsize'] = 8
-plt.rcParams['ytick.labelsize'] = 8
-plt.rcParams['legend.fontsize'] = 10
-plt.rcParams['figure.titlesize'] = 12
 
 list1 = {}
 ## color schema Dark-RED-ROY-G-BIV Black, 
@@ -53,19 +42,40 @@ def process_onestrand_files(infile,options,output_folder,ax,count):
     plot_graph(X,Y,0,xmin,xmax,options,ax,label,count,noL)
     
 
-def plot_graph(X,Y1,Y2,xmin,xmax,options,ax,label,count,noL):
+def plot_graph(X,Y1,Y2,xmin,xmax,options,ax,label,count,noL,shaded):
+    if shaded:
+        # matplotlib v2.0
+        plt.rcParams['font.family'] = 'sans-serif'
+        plt.rcParams['font.serif'] = 'Ubuntu'
+        plt.rcParams['font.monospace'] = 'Ubuntu Mono'
+        plt.rcParams['font.size'] = 10
+        plt.rcParams['axes.labelsize'] = 10
+        plt.rcParams['axes.labelweight'] = 'bold'
+        plt.rcParams['xtick.labelsize'] = 8
+        plt.rcParams['ytick.labelsize'] = 8
+        plt.rcParams['legend.fontsize'] = 10
+        plt.rcParams['figure.titlesize'] = 12
+
     X = movingaverage(X,options.window)
     Y1 = movingaverage(Y1,options.window)
     if options.norm == 1:
         Y1 = [float(x)/max(Y1) for x in Y1]
-        
-    if label == "Hsf-MHS":
-            ax.plot(X, Y1, color="#AAAAAA",label=label,lw=3.0, zorder=1)
+
+    if shaded:     
+        if label == "Hsf-MHS":	
+            ax.plot(X, Y1, color="#AAAAAA",label=label,lw=3.0, zorder=1)	
             ax.fill_between(X,Y1,0,facecolor='#AAAAAA',edgecolor='#AAAAAA')
-            ax.set_xlim(-500,500)
-    else:
-        ax.plot(X, Y1, color=colors[count],label=label,lw=3.0, zorder=2)
-        ax.set_xlim(-500,500)
+        else:
+            ax.plot(X, Y1, color=colors[count],label=label,lw=3.0, zorder=2)	
+        ax.set_xlim(-500,500)	
+    else: 
+        if label == "Nap1-wt-140-180-Rep2" or label == "Heatshock": 
+            ax.plot(X, Y1, color="#AAAAAA",label=label,lw=3.0)
+            ax.fill_between(X,Y1,0,facecolor='#AAAAAA',edgecolor='#AAAAAA')
+            ax.set_ylim(0,1)
+        else:
+            ax.plot(X, Y1, color=colors[count],label=label,lw=3.0)
+        ax.set_xlim(-200,200)
     
 # Moving Average smoothing
 def movingaverage(interval, window_size):
@@ -109,6 +119,8 @@ def run():
                       help='Window size of moving average., Default=5')
     parser.add_option('-o', action='store', type='int', dest='norm',default=0,
                       help='1=> Divde by max normalization, Default => Plot absolute occupancy.')
+    parser.add_option('--shaded', action='store_true', dest='shaded',
+                      help='Creates shaded plot')
     (options, args) = parser.parse_args()
     
     if not args:
@@ -136,7 +148,8 @@ def run():
         
         # Declaring plotting parameters
         f,ax = subplots(1,1,sharex='all')
-        f.subplots_adjust(hspace=0)
+        if shaded:
+             f.subplots_adjust(hspace=0)
         count = -1        
 
     for f in sense_files:
@@ -148,8 +161,11 @@ def run():
                 continue
             print "pvalue of KS-test between "+k1+" "+k2+" = "+str(stats.ks_2samp(v1,v2))
    
-    csfont = {'fontname':'Comic Sans MS'} 
-    ax.legend(loc=1,prop={'size':12})
+    if shaded:
+        csfont = {'fontname':'Arial MS'}
+        ax.legend(loc=1,prop={'size':12})
+    else:
+        ax.legend()
     savefig(outfile)
        
 # Execute the main function -> run() 

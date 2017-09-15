@@ -1,6 +1,6 @@
 import os
 from collections import defaultdict
-import argparse #Lila
+import argparse 
 
 def process_file(args):
     outdir = os.path.join(os.path.dirname(args.input_directory),"_CDT")
@@ -9,7 +9,7 @@ def process_file(args):
     if not os.path.exists(args.input_directory):
        parser.error('Path {} does not exist.'.format(args.input_directory))    
 
-    idxDir=args.input_directory	#Lila
+    idxDir=args.input_directory	
 
     # Process reference file first:
     in0 = open(args.ref,"rt")
@@ -121,7 +121,6 @@ def print_header(out,args):
     out.write(line+"\n")
 
 def run():
-     #Lila
      parser = argparse.ArgumentParser()
      parser.add_argument('input_directory',
                       help='Path to directory containing *.tab files')
