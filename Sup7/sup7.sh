@@ -8,11 +8,11 @@ if [ ! -d $SHARED_FILES ]
 		mkdir $SHARED_FILES
 fi
 
-CHROM_INFO=../shared_files/hg19.chrom.sizes
+CHROM_INFO=../shared_files/sacCer3.chrom.sizes
 if [ ! -e $CHROM_INFO ]
 	then
 		cd $SHARED_FILES
-		wget https://genome.ucsc.edu/goldenpath/help/hg19.chrom.sizes
+		wget http://hgdownload-test.cse.ucsc.edu/goldenPath/sacCer3/bigZips/sacCer3.chrom.sizes
 		cd $WD
 fi
 
