@@ -2,7 +2,7 @@
 # Original script from Rohit Reja
 # Center for Eukaryotic Gene Regulation
 # The Penn State University
-# Edited by Lila Rieber - 9/15/17
+# Edited by Lila Rieber - 9/18/17
 
 from itertools import tee, izip
 import os
@@ -20,21 +20,21 @@ def process_file(idxDir, genFile, stranded, outdir, tmpdir):
 			continue
 		
 		
-	idxData = {}
+		idxData = {}
 		filenames.append(fname)
 		print "[INFO]: Reading the index file = "+fname
-	with open(os.path.join(idxDir,fname)) as IN:
-		for line in IN:
-			if line.startswith("#") or line.startswith("chrom"):
-			continue
-			cols = line.rstrip().split("\t")
-			if stranded:
-			idxData[cols[0]+":"+cols[1]+"_F"] = float(cols[2])
-			idxData[cols[0]+":"+cols[1]+"_R"] = float(cols[3])
-			else: 
-			idxData[cols[0]+":"+cols[1]] = float(cols[2]) + float(cols[3])	
+		with open(os.path.join(idxDir,fname)) as IN:
+			for line in IN:
+				if line.startswith("#") or line.startswith("chrom"):
+					continue
+				cols = line.rstrip().split("\t")
+				if stranded:
+					idxData[cols[0]+":"+cols[1]+"_F"] = float(cols[2])
+					idxData[cols[0]+":"+cols[1]+"_R"] = float(cols[3])
+				else: 
+					idxData[cols[0]+":"+cols[1]] = float(cols[2]) + float(cols[3])	
 		IN.close()
-		
+	
 		print "[INFO]: Creating the genomic intervals for = "+fname
 		if stranded: 
 			outtmp_forward = open(os.path.join(tmpdir,fname+"_forward"),"w")
@@ -45,26 +45,26 @@ def process_file(idxDir, genFile, stranded, outdir, tmpdir):
 			outtmp = open(os.path.join(tmpdir,fname),"w")
 			tmpfile = os.path.join(tmpdir,os.path.splitext(fname)[0]+".tmp")	
 		with open(genFile) as ING:
-		nooflines = 0
-		for line in ING:
-			chrom, END = line.rstrip().split("\t")
-			for j in list(xrange(1, int(END)+1)):
-				key =  chrom+":"+str(j)
-				if stranded:
-					key_F =  chrom+":"+str(j)+"_F"
-					key_R =  chrom+":"+str(j)+"_R"
-					if idxData.has_key(key_F) and idxData.has_key(key_R):
-						outtmp_forward.write(key+"\t"+str(idxData[chrom+":"+str(j)+"_F"])+"\n")
-						outtmp_reverse.write(key+"\t"+str(idxData[chrom+":"+str(j)+"_R"])+"\n")
+			nooflines = 0
+			for line in ING:
+				chrom, END = line.rstrip().split("\t")
+				for j in list(xrange(1, int(END)+1)):
+					key =  chrom+":"+str(j)
+					if stranded:
+						key_F =  chrom+":"+str(j)+"_F"
+						key_R =  chrom+":"+str(j)+"_R"
+						if idxData.has_key(key_F) and idxData.has_key(key_R):
+							outtmp_forward.write(key+"\t"+str(idxData[chrom+":"+str(j)+"_F"])+"\n")
+							outtmp_reverse.write(key+"\t"+str(idxData[chrom+":"+str(j)+"_R"])+"\n")
+						else:
+							outtmp_forward.write(key+"\t0\n")
+							outtmp_reverse.write(key+"\t0\n")
 					else:
-						outtmp_forward.write(key+"\t0\n")
-						outtmp_reverse.write(key+"\t0\n")
-				else:
-					if key in idxData:
-						outtmp.write(key+"\t"+str(idxData[chrom+":"+str(j)])+"\n")	
-					else:
-						outtmp.write(key+"\t0\n")
-				nooflines += 1
+						if key in idxData:
+							outtmp.write(key+"\t"+str(idxData[chrom+":"+str(j)])+"\n")	
+						else:
+							outtmp.write(key+"\t0\n")
+					nooflines += 1
 				 
 		ING.close()
 
@@ -89,7 +89,7 @@ def process_file(idxDir, genFile, stranded, outdir, tmpdir):
 	for fname in os.listdir(tmpdir):
 		if not fname.endswith(".tmp"):
 			continue
-		IN = open(os.path.join(tmpdir,fname),"rt")
+		IN = open(os.path.join(tmpdir,fname))
 		list1 = []
 		for line in IN:
 			cols = line.rstrip().split("\t")
@@ -101,7 +101,7 @@ def process_file(idxDir, genFile, stranded, outdir, tmpdir):
 		for fname in os.listdir(tmpdir):
 			if not fname.endswith(ele+".tmp"):
 				continue
-			IN = open(os.path.join(tmpdir,fname),"rt")
+			IN = open(os.path.join(tmpdir,fname))
 			list1 = []
 			for line in IN:
 				cols = line.rstrip().split("\t")
@@ -112,7 +112,7 @@ def process_file(idxDir, genFile, stranded, outdir, tmpdir):
 		for fname in os.listdir(tmpdir):
 			if not fname.endswith("_"+ele+".tmp"):
 				continue
-			IN = open(os.path.join(tmpdir,fname),"rt")
+			IN = open(os.path.join(tmpdir,fname))
 			final_name = os.path.join(outdir,os.path.splitext(fname)[0]+".tab")
 			out = open(os.path.join(outdir,os.path.splitext(fname)[0]+".tmp"),"w")
 			rank = 0
@@ -133,7 +133,7 @@ def process_file(idxDir, genFile, stranded, outdir, tmpdir):
 			out.close()
 			IN.close()
 			os.system("sort -k1,1 -k2,2n "+os.path.join(outdir,os.path.splitext(fname)[0]+".tmp")+" >"+final_name)
-	os.system("rm "+os.path.join(outdir,os.path.splitext(fname)[0]+"_"+ele+".tmp"))
+			os.system("rm "+os.path.join(outdir,fname))
 
 
 def windows(iterable, size):
