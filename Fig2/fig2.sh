@@ -19,7 +19,7 @@ fi
 python ../scripts/quantile_norm_singlebase_bin.py tab_files $CHROM_INFO
 
 CDT_DIR=_CDT
-SORT_FILE=ALL-RP-SAGA-TFIID-SUT-CUT-XUT_TSS-TES-MID_sortedby_geneLength.gff
+SORT_FILE=../shared_files/ALL-RP-SAGA-TFIID-SUT-CUT-XUT_TSS-TES-MID_sortedby_geneLength.gff
 
 if [ ! -d $CDT_DIR ]
 	then

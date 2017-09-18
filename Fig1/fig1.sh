@@ -16,5 +16,12 @@ if [ ! -e $CHROM_INFO ]
 		cd $WD
 fi
 
+CDT_DIR=_CDT
+
+if [ ! -d $CDT_DIR ]
+	then
+		python ../scripts/map_shifted_tags_to_ref.py tab_files/Normalized_tab_files ../shared_files/Xu_2009_ORF_TSS_TES_V64.gff
+fi
+
 python ../scripts/quantile_norm_singlebase_bin.py tab_files $CHROM_INFO --stranded
 python ../scripts/Composite_for_many_factors_one_plot.py -w 20 tab_files/Normalized_tab_files 
