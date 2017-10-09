@@ -7,13 +7,14 @@
 from itertools import tee, izip
 import os
 import argparse
+import sys
 
 # Process file script will process the tab, or idx files from the working folder.
 def process_file(idxDir, genFile, stranded, outdir, tmpdir):
 	
 	full_data = {}
 	filenames = []
-	## Reading all the tab files and computing the bottom 25% quantile.
+	# Reading all the tab files and computing the bottom 25% quantile.
 	for fname in os.listdir(idxDir):
 		# TAB, IDX, or SCIDX file formats are required.
 		if not fname.endswith(".tab") or fname.endswith(".idx") or fname.endswith(".scidx"):
@@ -34,7 +35,7 @@ def process_file(idxDir, genFile, stranded, outdir, tmpdir):
 				else: 
 					idxData[cols[0]+":"+cols[1]] = float(cols[2]) + float(cols[3])	
 		IN.close()
-	
+
 		print "[INFO]: Creating the genomic intervals for = "+fname
 		if stranded: 
 			outtmp_forward = open(os.path.join(tmpdir,fname+"_forward"),"w")
@@ -43,7 +44,7 @@ def process_file(idxDir, genFile, stranded, outdir, tmpdir):
 			tmpfile_reverse = os.path.join(tmpdir,os.path.splitext(fname)[0]+"_reverse.tmp")
 		else:
 			outtmp = open(os.path.join(tmpdir,fname),"w")
-			tmpfile = os.path.join(tmpdir,os.path.splitext(fname)[0]+".tmp")	
+			tmpfile = os.path.join(tmpdir,os.path.splitext(fname)[0]+"_.tmp")	
 		with open(genFile) as ING:
 			nooflines = 0
 			for line in ING:
@@ -73,6 +74,7 @@ def process_file(idxDir, genFile, stranded, outdir, tmpdir):
 			outtmp_reverse.close()
 		else:
 			outtmp.close()
+	
 		print "Sorting the file"
 		if stranded: 
 			os.system("sort -nrk 2 "+os.path.join(tmpdir,fname+"_forward")+" >"+tmpfile_forward)
@@ -80,22 +82,22 @@ def process_file(idxDir, genFile, stranded, outdir, tmpdir):
 		else:
 			os.system("sort -nrk 2 "+os.path.join(tmpdir,fname)+" >"+tmpfile)	
 		print "Completed Sorting !"
-		
+
 	totals = [0] * nooflines
 	if stranded: 
 		strand = ["forward","reverse"]
 	else:
 		strand = [""]
-	for fname in os.listdir(tmpdir):
-		if not fname.endswith(".tmp"):
-			continue
-		IN = open(os.path.join(tmpdir,fname))
-		list1 = []
-		for line in IN:
-			cols = line.rstrip().split("\t")
-			list1.append(float(cols[1]))
-		IN.close()
-		totals = map(sum, izip(list1, totals))
+	#for fname in os.listdir(tmpdir):
+	#	if not fname.endswith(".tmp"):
+	#		continue
+	#	IN = open(os.path.join(tmpdir,fname))
+	#	list1 = []
+	#	for line in IN:
+	#		cols = line.rstrip().split("\t")
+	#		list1.append(float(cols[1]))
+	#	IN.close()
+	#	totals = map(sum, izip(list1, totals))
 	
 	for ele in strand:
 		for fname in os.listdir(tmpdir):
@@ -134,6 +136,7 @@ def process_file(idxDir, genFile, stranded, outdir, tmpdir):
 			IN.close()
 			os.system("sort -k1,1 -k2,2n "+os.path.join(outdir,os.path.splitext(fname)[0]+".tmp")+" >"+final_name)
 			os.system("rm "+os.path.join(outdir,fname))
+	os.system("rm -r " + tmpdir)
 
 
 def windows(iterable, size):

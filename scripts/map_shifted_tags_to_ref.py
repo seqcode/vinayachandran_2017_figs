@@ -1,10 +1,10 @@
 import os
 from collections import defaultdict
 import argparse 
+import sys
 
 def process_file(args):
-    outdir = os.path.join(os.path.dirname(args.input_directory),"_CDT")
-    if not os.path.exists(outdir): os.makedirs(outdir)
+    if not os.path.exists(args.outdir): os.makedirs(args.outdir)
      
     if not os.path.exists(args.input_directory):
        parser.error('Path {} does not exist.'.format(args.input_directory))    
@@ -12,8 +12,8 @@ def process_file(args):
     idxDir=args.input_directory	
 
     # Process reference file first:
-    in0 = open(args.ref,"rt")
-    tmpref = os.path.join(outdir,"tmpref.gff")
+    in0 = open(args.ref)
+    tmpref = os.path.join(args.outdir,"tmpref.gff")
     outref = open(tmpref,"w")
     for line in in0:
         if line.startswith("#") or line.startswith("chrom"):
@@ -40,10 +40,10 @@ def process_file(args):
         
         if not (fname.endswith(".idx") or fname.endswith(".tab")):
             continue
-        outcdt = os.path.join(outdir,os.path.splitext(fname)[0]+".cdt")
-        tmptab = os.path.join(outdir,"tmptab.gff")
+        outcdt = os.path.join(args.outdir,os.path.splitext(fname)[0]+".cdt")
+        tmptab = os.path.join(args.outdir,"tmptab.gff")
         out = open(tmptab,"w")
-        in1 = open(os.path.join(idxDir,fname),"rt")
+        in1 = open(os.path.join(idxDir,fname))
         print "INFO: Processing = "+fname
         for line in in1:
             if line.startswith("#") or line.startswith("chrom"):
@@ -56,7 +56,7 @@ def process_file(args):
         
         in1.close()
         out.close()
-        intersect = os.path.join(outdir,"intersect.txt")
+        intersect = os.path.join(args.outdir,"intersect.txt")
         os.system(args.location+"intersectBed"+" -wao -a "+tmpref+" -b "+tmptab+" >"+intersect)
         
         # Remove tmptab as its not required anymore.
@@ -132,6 +132,8 @@ def run():
                       help='Downstream distance, default=500')
      parser.add_argument('-l', dest='location',default='',
                       help='BEDTools location (if not in path)')
+     parser.add_argument('-o', dest='outdir',default='',
+                      help='Directory to write CDT files to')
      
      args = parser.parse_args()
         

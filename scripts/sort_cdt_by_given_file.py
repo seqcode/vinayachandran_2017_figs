@@ -1,16 +1,17 @@
 import os
 from collections import OrderedDict
 import argparse
+import sys
 
 def  process_file(args):
-    outdir = os.path.join(os.path.dirname(args.input_directory),'sorted')
+    outdir = os.path.join(args.input_directory, 'sorted')
     if not os.path.exists(outdir): os.makedirs(outdir)
     
      
     if not os.path.exists(args.input_directory):
         parser.error('Path {} does not exist.'.format(args.input_directory))
 
-    input = open(args.sort_file,'rt')
+    input = open(args.sort_file)
     order = OrderedDict()
     for line in input:
         if line.startswith('Uniqe') or line.startswith('EWEIGHT') or line.startswith('gene') or line.startswith('#'):
@@ -67,7 +68,7 @@ def  process_file(args):
 def run():
     parser = argparse.ArgumentParser()
     parser.add_argument('input_directory',
-                      help='Path to directory containing *.tab files')
+                      help='Path to directory containing *.cdt files')
     parser.add_argument('sort_file',
                       help='Path to file describing sort order')
     parser.add_argument('-n', type=int, dest='extra',default=50,

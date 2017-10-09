@@ -4,8 +4,7 @@
 
 # Import libraries
 import sys, os
-from operator import add
-from optparse import OptionParser, IndentedHelpFormatter
+import argparse
 from pylab import *
 import numpy as np
 import matplotlib as plt
@@ -13,36 +12,38 @@ from scipy import stats
 
 list1 = {}
 ## color schema Dark-RED-ROY-G-BIV Black, 
-colors = ["#FF3333","#FF9933","#FFFF00","#4C9900","#0000FF","#4B0082","#9F00FF","#000000"]
+colors = ['#FF3333','#FF9933','#FFFF00','#4C9900','#0000FF','#4B0082','#9F00FF','#000000','#FF3333','#FF9933','#FFFF00','#4C9900','#0000FF','#4B0082','#9F00FF','#000000','#FF3333','#FF9933','#FFFF00','#4C9900',
+'#0000FF','#4B0082','#9F00FF','#000000','#FF3333','#FF9933','#FFFF00','#4C9900','#0000FF','#4B0082','#9F00FF','#000000','#FF3333','#FF9933','#FFFF00','#4C9900','#0000FF','#4B0082','#9F00FF','#000000',
+'#FF3333','#FF9933','#FFFF00','#4C9900','#0000FF','#4B0082','#9F00FF','#000000']
 
-def process_onestrand_files(infile,options,output_folder,ax,count):
-    print "processing "+infile
+def process_onestrand_files(infile, window_size, shaded, normalize, output_folder, ax, count):
+    print 'processing '+infile
     X = []
-    label = os.path.basename(infile).split("_")[0]
+    label = os.path.basename(infile).split('_')[0]
     # Process the only CDT file 
-    in_sense = open(infile,"rt")
     noL = 0
-    for line in in_sense:
-        if line.startswith("Uniqe") or line.startswith("ID") or line.startswith("gene"):
-            tmp = line.rstrip().split("\t")[2:]
-            X = [int(x) for x in tmp]
-            xmin = min(X)
-            xmax = max(X)
-            Y = [0]*len(X)
-            continue
+    with open(infile) as in_sense:
+        for line in in_sense:
+            if line.startswith('Uniqe') or line.startswith('ID') or line.startswith('gene'):
+                tmp = line.rstrip().split('\t')[2:]
+                X = [int(x) for x in tmp]
+                xmin = min(X)
+                xmax = max(X)
+                Y = [0]*len(X)
         
-        noL = noL + 1
-        tmplist = line.rstrip().split("\t")[2:]
-        newList = [float(x) for x in tmplist]
-        Y = map(add,Y,newList)
+            noL += 1
+            tmplist = line.rstrip().split('\t')[2:]
+            newList = [float(x) for x in tmplist]
+            Y = map(add,Y,newList)
+        in_sense.close()
         
-    list1[label] = smoothListGaussian(Y,options.window)
+    list1[label] = smoothListGaussian(Y, window_size)
     ##### REMOVE THE HASH WHEN YOU WANT TO DIVIDE BY NO OF GENES.
     #Y = [float(x)/noL for x in Y]
-    plot_graph(X,Y,0,xmin,xmax,options,ax,label,count,noL)
+    plot_graph(X, Y, 0, xmin, xmax, window_size, shaded, normalize, ax, label, count, noL)
     
 
-def plot_graph(X,Y1,Y2,xmin,xmax,options,ax,label,count,noL,shaded):
+def plot_graph(X, Y1, Y2, xmin, xmax, window_size, shaded, normalize, ax, label, count, noL):
     if shaded:
         # matplotlib v2.0
         plt.rcParams['font.family'] = 'sans-serif'
@@ -56,26 +57,24 @@ def plot_graph(X,Y1,Y2,xmin,xmax,options,ax,label,count,noL,shaded):
         plt.rcParams['legend.fontsize'] = 10
         plt.rcParams['figure.titlesize'] = 12
 
-    X = movingaverage(X,options.window)
-    Y1 = movingaverage(Y1,options.window)
-    if options.norm == 1:
+    X = movingaverage(X, window_size)
+    Y1 = movingaverage(Y1, window_size)
+    if normalize:
         Y1 = [float(x)/max(Y1) for x in Y1]
 
     if shaded:     
-        if label == "Hsf-MHS":	
-            ax.plot(X, Y1, color="#AAAAAA",label=label,lw=3.0, zorder=1)	
+        if label == 'Hsf-MHS':	
+            ax.plot(X, Y1, color='#AAAAAA',label=label,lw=3.0, zorder=1)	
             ax.fill_between(X,Y1,0,facecolor='#AAAAAA',edgecolor='#AAAAAA')
         else:
             ax.plot(X, Y1, color=colors[count],label=label,lw=3.0, zorder=2)	
-        ax.set_xlim(-500,500)	
     else: 
-        if label == "Nap1-wt-140-180-Rep2" or label == "Heatshock": 
-            ax.plot(X, Y1, color="#AAAAAA",label=label,lw=3.0)
+        if label == 'Nap1-wt-140-180-Rep2' or label == 'Heatshock': 
+            ax.plot(X, Y1, color='#AAAAAA',label=label,lw=3.0)
             ax.fill_between(X,Y1,0,facecolor='#AAAAAA',edgecolor='#AAAAAA')
             ax.set_ylim(0,1)
         else:
             ax.plot(X, Y1, color=colors[count],label=label,lw=3.0)
-        ax.set_xlim(-200,200)
     
 # Moving Average smoothing
 def movingaverage(interval, window_size):
@@ -99,48 +98,33 @@ def smoothListGaussian(list,degree):
      new_smooth = [int(i) for i in smoothed]
      return new_smooth  
 
-# Manual for the script
-usage = '''
-input_paths may be:
-- a directory to run on all files in them
-
-example usages:
-python composite_for_many_factors_one_plot.py /usr/local/folder_containing_CDT_files
-'''.lstrip()
-
-# We must override the help formatter to force it to obey our newlines in our custom description
-class CustomHelpFormatter(IndentedHelpFormatter):
-    def format_description(self, description):
-        return description
-
 def run():
-    parser = OptionParser(usage='%prog [options] input_paths', description=usage, formatter=CustomHelpFormatter())
-    parser.add_option('-w', action='store', type='int', dest='window', default = 5,
-                      help='Window size of moving average., Default=5')
-    parser.add_option('-o', action='store', type='int', dest='norm',default=0,
-                      help='1=> Divde by max normalization, Default => Plot absolute occupancy.')
-    parser.add_option('--shaded', action='store_true', dest='shaded',
-                      help='Creates shaded plot')
-    (options, args) = parser.parse_args()
-    
-    if not args:
-        parser.print_help()
-        sys.exit(1)
-        
+    parser = argparse.ArgumentParser()
+    parser.add_argument('input_directory',
+                        help='Path to directory containing *.tab files')
+    parser.add_argument('-w', type=int, default=5,
+                        help='Window size of moving average, default=5')
+    parser.add_argument('--shaded', action='store_true', 
+		        help='Creates shaded plot')
+    parser.add_argument('--normalize', action='store_true', 
+		        help='Divides by max to normalize')
+
+    args = parser.parse_args()
+
     antisense_files = []
     sense_files = []
     
-    output_folder = os.path.join(args[0],'_composite/') 
+    output_folder = os.path.join(args.input_directory,'_composite/') 
     if not os.path.exists(output_folder): os.makedirs(output_folder)
-    outfile = os.path.join(output_folder,"composite_plot_all_factors.svg")
+    outfile = os.path.join(output_folder,'composite_plot_all_factors.svg')
     
-    if not os.path.exists(args[0]):
-        parser.error('Path %s does not exist.' % args[0])
-    if os.path.isdir(args[0]):
-        for fname in os.listdir(args[0]):
-            if fname.endswith(".txt") or fname.endswith(".cdt"):
+    if not os.path.exists(args.input_directory):
+        parser.error('Path {} does not exist.'.format(args.input_directory))
+    if os.path.isdir(args.input_directory):
+        for fname in os.listdir(args.input_directory):
+            if fname.endswith('.txt') or fname.endswith('.cdt'):
                 # intelligently join paths without worrying about '/'
-                fpath = os.path.join(args[0], fname)
+                fpath = os.path.join(args.input_directory, fname)
                 sense_files.append(fpath)
                     
         # The number of the subplots
@@ -148,20 +132,20 @@ def run():
         
         # Declaring plotting parameters
         f,ax = subplots(1,1,sharex='all')
-        if shaded:
+        if args.shaded:
              f.subplots_adjust(hspace=0)
         count = -1        
 
     for f in sense_files:
-        count = count + 1
-        process_onestrand_files(f,options,output_folder,ax,count)
+        count += 1
+        process_onestrand_files(f, args.w, args.shaded, args.normalize, output_folder, ax, count)
     for k1,v1 in list1.items():
         for k2,v2 in list1.items():
             if k1 == k2:
                 continue
-            print "pvalue of KS-test between "+k1+" "+k2+" = "+str(stats.ks_2samp(v1,v2))
+            print 'pvalue of KS-test between {} and {} = {}'.format(k1, k2, stats.ks_2samp(v1,v2))
    
-    if shaded:
+    if args.shaded:
         csfont = {'fontname':'Arial MS'}
         ax.legend(loc=1,prop={'size':12})
     else:
@@ -169,5 +153,5 @@ def run():
     savefig(outfile)
        
 # Execute the main function -> run() 
-if __name__ == "__main__":
+if __name__ == '__main__':
     run() 

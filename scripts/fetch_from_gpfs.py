@@ -2,7 +2,7 @@ import os
 import sys
 
 wd = sys.argv[1]
-with open("../{}/tab_files_list".format(wd)) as tab_files:
+with open("../{}/tab_files_list.txt".format(wd)) as tab_files:
 	for line in tab_files:
 		tab_file = line.strip()
 		id_string = tab_file[0:5]

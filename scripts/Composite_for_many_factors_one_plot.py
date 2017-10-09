@@ -6,7 +6,8 @@ import numpy as np
 from matplotlib.font_manager import FontProperties
 
 ### color schema for Figure 2A
-colors = ["#FBDB0C","#FF00FF","#0000FF","#336600","#FF0000","#000000","#00FF00","#660066"] 
+colors = ["#FBDB0C","#FF00FF","#0000FF","#336600","#FF0000","#000000","#00FF00","#660066","#FBDB0C","#FF00FF","#0000FF","#336600","#FF0000","#000000","#00FF00","#660066","#FBDB0C","#FF00FF","#0000FF","#336600",
+"#FF0000","#000000","#00FF00","#660066","#FBDB0C","#FF00FF","#0000FF","#336600","#FF0000","#000000","#00FF00","#660066","#FBDB0C","#FF00FF","#0000FF","#336600","#FF0000","#000000","#00FF00","#660066"] 
 
 list1 = []
 def  process_files(sense,anti,options,output_folder,ax,count,color_count):
@@ -106,16 +107,13 @@ def plot_graph(X,Y1,Y2,xmin,xmax,options,ax,label,count,color_count):
         X = movingaverage(X,options.window)
         Y1 = movingaverage(Y1,options.window)
         Y2 = movingaverage(Y2,options.window)
-        Y1 = [float(x)/max(Y1) for x in Y1]
-        Y2 = [float(x)/max(Y2) for x in Y2]
+        #Y1 = [float(x)/max(Y1) for x in Y1]
+        #Y2 = [float(x)/max(Y2) for x in Y2]
         Y2 = [-1*x for x in Y2]
-            
+       
         ax.plot(X, Y1, color=colors[count],label=label,lw=3.0)
         ax.plot(X, Y2, color=colors[count],lw=3.0)
 
-        # Uncomment here to make y-axis same for all graphs
-        #ax[count-1].set_ylim(-500,300)
-        
         for tick in ax.yaxis.get_major_ticks():
             tick.label.set_fontsize(12)
             
@@ -123,7 +121,7 @@ def plot_graph(X,Y1,Y2,xmin,xmax,options,ax,label,count,color_count):
             tick.label.set_fontsize(12)
     else:
         Y1 = movingaverage(Y1,options.window)
-        Y1 = [float(x)/max(Y1) for x in Y1]
+        #Y1 = [float(x)/max(Y1) for x in Y1]
         X = movingaverage(X,options.window)
         
         ## To print the area under the curve
@@ -142,7 +140,9 @@ def plot_graph(X,Y1,Y2,xmin,xmax,options,ax,label,count,color_count):
             
         else:
             ax.plot(X, Y1, color=colors[count],label=label,lw=3.0)
-        ax.set_xlim(-500,500)
+
+    if options.ylim is not None:
+       ax.set_ylim(-options.ylim, options.ylim)
     
 def movingaverage(interval, window_size):
     # suggestion from: http://argandgahandapandpa.wordpress.com/2011/02/24/python-numpy-moving-average-for-data/
@@ -192,6 +192,8 @@ def run():
     parser = OptionParser(usage='%prog [options] input_paths', description=usage, formatter=CustomHelpFormatter())
     parser.add_option('-w', action='store', type='int', dest='window', default = 5,
                       help='Window size of moving average., Default=5')
+    parser.add_option('-y', action='store', type='int', dest='ylim', default = None,
+                      help='y-axis bounds, Default=None (i.e. will be set from data)')
 
     (options, args) = parser.parse_args()
     
@@ -211,26 +213,28 @@ def run():
         parser.error('Path %s does not exist.' % args[0])
     if os.path.isdir(args[0]):
         for fname in os.listdir(args[0]):
+            print fname
             if fname.endswith("cdt") or fname.endswith("txt"):
                 # intelligently join paths without worrying about '/'
                 fpath = os.path.join(args[0], fname)
-                matchobj = re.match(r'(.*)anti(.*)',fname)
-                if matchobj:
+                print fpath
+                if re.match(r'(.*)reverse(.*)',fname):
                     antisense_files.append(fpath)
-                else:
+                elif re.match(r'(.*)forward(.*)',fname):
                     sense_files.append(fpath)
                     
         # No of subplots to plot
         nof = len(sense_files)
          # Declaring plotting parameters
-        f,ax = subplots(1,1,1)
+        #f,ax = subplots(1,1,1)
+	f,ax = subplots(1,1)	#TEST
         count = -1
         color_count = 0
         
         
         if len(antisense_files) == 0:
             for f in sense_files:
-                count = count + 1
+                count += 1
                 process_onestrand_files(f,options,output_folder,ax,count,color_count)
                 color_count = color_count + 2
             lfp = FontProperties()
@@ -239,7 +243,7 @@ def run():
             savefig(outfile)
         else:   
             for f1 in antisense_files:
-                count = count + 1
+                count += 1
                 Oratio = 0
                 file1_anti = ""
                 file2_sense = ""
