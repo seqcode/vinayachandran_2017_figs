@@ -6,28 +6,28 @@ It calculates the sum of the range of data relative to your coor
 
 ***
 <required>:
--s: suffix for all the input files
--c: where the coordinate of your reference point (ex. if this dataset is mapped to -500 to 1000 relative to TSS, then -c 500)
--u: upstream limitation
--d: downstream limitation
--o: output file
+suffix for all the input files
+where the coordinate of your reference point (ex. if this dataset is mapped to -500 to 1000 relative to TSS, then this is 500)
+upstream limit
+downstream limit
+output file
 
-Example: python calculate_sum_from_columns.py -s .tab -c coor_location -u -150 -d 150 -o outfile 
+Example: python calculate_sum_from_columns.py .tab 500 -150 150 outfile 
 ***
 
 Created by Kuangyu Yen on 2012-04-27.
 Copyright (c) 2012 __PughLab@PSU__. All rights reserved.
-Edited by Lila Rieber on 9-13-2017
+Edited by Lila Rieber on 10-11-2017
 """
 
-import sys, getopt, os, csv, operator
+import argparse, os, csv, operator
 
 #
 # define functions
 #
 def getFiles(suffix):
-	all_files = os.listdir(os.getcwd())
-	return [x for x in all_files if x.endswith(suffix)]
+  all_files = os.listdir(os.getcwd())
+  return [x for x in all_files if x.endswith(suffix)]
 
 def sortDictValue(dict):
   id_list = sorted(dict.iteritems(), key=operator.itemgetter(0), reverse=False)
@@ -53,36 +53,38 @@ def calculate_sum(infile, left, right):
 
 
 if __name__ == '__main__':
-  if len(sys.argv) < 2 or not sys.argv[1].startswith("-"): sys.exit(usage)
-  
-  # get argument
-  optlist, alist = getopt.getopt(sys.argv[1:], "hs:c:u:d:o:")
-  for opt in optlist:
-    if opt[0] == "-h": sys.exit(usage)
-    elif opt[0] == "-s": suffix = opt[1]
-    elif opt[0] == "-c": ref_point = int(opt[1])+1
-    elif opt[0] == "-u": up_lim = int(opt[1])
-    elif opt[0] == "-d": dn_lim = int(opt[1])
-    elif opt[0] == "-o": out_file = opt[1]
+  parser = argparse.ArgumentParser()
+  parser.add_argument('suffix',
+                        help='Suffix of files to process')
+  parser.add_argument('ref_point', type=int,
+                        help='Reference point')
+  parser.add_argument('up_lim', type=int,
+                      help='Upper limit')
+  parser.add_argument('dn_lim', type=int, 
+                      help='Lower limit')
+  parser.add_argument('out_file', 
+                      help='File to write to')
     
-  left, right = ref_point + up_lim, ref_point + dn_lim
+  args = parser.parse_args()   
+
+  left, right = args.ref_point + args.up_lim, args.ref_point + args.dn_lim
   infiles, dict_exp_value, result = getFiles(suffix), {}, []
   
   for infile in infiles:
     genelist, values = calculate_sum(infile, left, right)
     dict_exp_value[infile] = values
     
-    print "finish processing %s" %infile
+    print "finish processing {}".format(infile)
   
   i = 0
   while i < len(genelist):
     tmp = []
     tmp.append(genelist[i])
     for j in range(len(dict_exp_value.keys())):
-		tmp.append(dict_exp_value[dict_exp_value.keys()[j]][i])
+      tmp.append(dict_exp_value[dict_exp_value.keys()[j]][i])
       
     result.append(tmp)
-    i = i + 1
+    i += 1
 
   
   exp_name = dict_exp_value.keys()
