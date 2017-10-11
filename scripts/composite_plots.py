@@ -16,7 +16,7 @@ colors = ['#FF3333','#FF9933','#FFFF00','#4C9900','#0000FF','#4B0082','#9F00FF',
 '#0000FF','#4B0082','#9F00FF','#000000','#FF3333','#FF9933','#FFFF00','#4C9900','#0000FF','#4B0082','#9F00FF','#000000','#FF3333','#FF9933','#FFFF00','#4C9900','#0000FF','#4B0082','#9F00FF','#000000',
 '#FF3333','#FF9933','#FFFF00','#4C9900','#0000FF','#4B0082','#9F00FF','#000000']
 
-def process_onestrand_files(infile, window_size, shaded, normalize, output_folder, ax, count):
+def process_onestrand_files(infile, window_size, y, shaded, normalize, output_folder, ax, count):
     print 'processing '+infile
     X = []
     label = os.path.basename(infile).split('_')[0]
@@ -30,6 +30,7 @@ def process_onestrand_files(infile, window_size, shaded, normalize, output_folde
                 xmin = min(X)
                 xmax = max(X)
                 Y = [0]*len(X)
+                continue
         
             noL += 1
             tmplist = line.rstrip().split('\t')[2:]
@@ -40,10 +41,10 @@ def process_onestrand_files(infile, window_size, shaded, normalize, output_folde
     list1[label] = smoothListGaussian(Y, window_size)
     ##### REMOVE THE HASH WHEN YOU WANT TO DIVIDE BY NO OF GENES.
     #Y = [float(x)/noL for x in Y]
-    plot_graph(X, Y, 0, xmin, xmax, window_size, shaded, normalize, ax, label, count, noL)
+    plot_graph(X, Y, 0, xmin, xmax, window_size, y, shaded, normalize, ax, label, count, noL)
     
 
-def plot_graph(X, Y1, Y2, xmin, xmax, window_size, shaded, normalize, ax, label, count, noL):
+def plot_graph(X, Y1, Y2, xmin, xmax, window_size, y, shaded, normalize, ax, label, count, noL):
     if shaded:
         # matplotlib v2.0
         plt.rcParams['font.family'] = 'sans-serif'
@@ -75,6 +76,8 @@ def plot_graph(X, Y1, Y2, xmin, xmax, window_size, shaded, normalize, ax, label,
             ax.set_ylim(0,1)
         else:
             ax.plot(X, Y1, color=colors[count],label=label,lw=3.0)
+    if y is not None:
+       ax.set_ylim(0, y)
     
 # Moving Average smoothing
 def movingaverage(interval, window_size):
@@ -104,6 +107,8 @@ def run():
                         help='Path to directory containing *.tab files')
     parser.add_argument('-w', type=int, default=5,
                         help='Window size of moving average, default=5')
+    parser.add_argument('-y', action='store', type=int, default = None,
+                      help='y-axis bound, Default=None (i.e. will be set from data)')
     parser.add_argument('--shaded', action='store_true', 
 		        help='Creates shaded plot')
     parser.add_argument('--normalize', action='store_true', 
@@ -138,7 +143,7 @@ def run():
 
     for f in sense_files:
         count += 1
-        process_onestrand_files(f, args.w, args.shaded, args.normalize, output_folder, ax, count)
+        process_onestrand_files(f, args.w, args.y, args.shaded, args.normalize, output_folder, ax, count)
     for k1,v1 in list1.items():
         for k2,v2 in list1.items():
             if k1 == k2:
