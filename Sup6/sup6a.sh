@@ -1,28 +1,16 @@
 set -e
 
-WD=$PWD
+NORM_DIR=tab_files_a/Normalized_tab_files
 
-SHARED_FILES=../shared_files
-if [ ! -d $SHARED_FILES ]
+if [ ! -d $NORM_DIR ]
 	then
-		mkdir $SHARED_FILES
+		python ../scripts/quantile_norm_singlebase_bin.py tab_files_a ../shared_files/sacCer3.chrom.sizes
 fi
 
-CHROM_INFO=../shared_files/sacCer3.chrom.sizes
-if [ ! -e $CHROM_INFO ]
-	then
-		cd $SHARED_FILES
-		wget http://hgdownload-test.cse.ucsc.edu/goldenPath/sacCer3/bigZips/sacCer3.chrom.sizes
-		cd $WD
-fi
-
-python ../scripts/quantile_norm_singlebase_bin.py tab_files_a $CHROM_INFO
-
-OUT_DIR=_CDT
+OUT_DIR=a_CDT
 if [ ! -d $OUT_DIR ]
 	then
-		mkdir $OUT_DIR
+		python ../scripts/map_shifted_tags_to_ref.py -u 30 -d 100 -o $OUT_DIR $NORM_DIR ../shared_files/TATA_consensus_anti_Max_sort.bed
 fi
 
-python ../scripts/map_shifted_tags_to_ref.py -u 30 -d 100 tab_files_a/Normalized_tab_files TATA_consensus_anti_Max_sort.bed
 python ../scripts/composite_plots.py -w 20 $OUT_DIR

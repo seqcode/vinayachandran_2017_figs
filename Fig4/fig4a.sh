@@ -7,7 +7,7 @@ if [ ! -d $NORM_DIR ]
 		python ../scripts/quantile_norm_singlebase_bin.py tab_files_a ../shared_files/sacCer3.chrom.sizes
 fi
 
-OUT_DIRS=(divergent non-divergent)
+OUT_DIRS=(a_divergent_CDT a_non-divergent_CDT)
 GFFS=(Hsf1-union-Xu-TSS-divergent-upstream.gff Hsf1-union-Xu-TSS-sortby-distance.gff)
 
 for i in `seq 0 $((${#OUT_DIRS[@]}-1))`

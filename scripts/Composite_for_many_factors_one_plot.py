@@ -16,7 +16,7 @@ def  process_files(sense,anti,options,output_folder,ax,count,color_count):
     label = os.path.basename(sense).split("_")[0]
     X =[]
     # Process Sense file first
-    in_sense = open(sense,"rt")
+    in_sense = open(sense)
     for line in in_sense:
         if line.startswith("Uniqe"):
             tmp = line.rstrip().split("\t")[2:]
