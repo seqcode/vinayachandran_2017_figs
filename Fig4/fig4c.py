@@ -1,4 +1,3 @@
-import numpy as np
 from matplotlib import pyplot as plt
 
 def get_tags(tab_file):
@@ -44,30 +43,27 @@ for orientation in ("upstream", "downstream"):
 		gff.close()
 
 	#tag counts at each TSS
-	mhs_tss_counts = np.zeros_like(chroms, dtype=float)	
-	hs_tss_counts = np.zeros_like(chroms, dtype=float)
+	mhs_tss_counts = []	
+	hs_tss_counts = []
 
-	for i, (chrom, coord) in enumerate(zip(chroms, coords)):
+	for chrom, coord in zip(chroms, coords):
 		start = coord - window_size
 		end = coord + window_size
 	
 		#sum tags in window
-		mhs_tss_counts[i] = sum([mhs_tags["{}:{}".format(chrom, j)] for j in range(start,end)])	 
-		hs_tss_counts[i] = sum([hs_tags["{}:{}".format(chrom, j)] for j in range(start,end)])
+		mhs_tss_counts.append(sum([mhs_tags["{}:{}".format(chrom, j)] for j in range(start,end)]))	 
+		hs_tss_counts.append(sum([hs_tags["{}:{}".format(chrom, j)] for j in range(start,end)]))
 	
 	#fold change
-	log_ratios = np.zeros_like(mhs_tss_counts)
-	for i, (mhs_tss_count, hs_tss_count) in enumerate(zip(mhs_tss_counts, hs_tss_counts)):
-		if hs_tss_count != 0 and mhs_tss_count != 0:
-			log_ratios[i] = np.log2(hs_tss_count/mhs_tss_count)
-
 	upregulated = 0
 	downregulated = 0
-	for log_ratio in log_ratios:
-		if log_ratio > 0:
-			upregulated += 1
-		elif log_ratio < 0:
-			downregulated += 1
+	for mhs_tss_count, hs_tss_count in zip(mhs_tss_counts, hs_tss_counts):
+		if hs_tss_count != 0 and mhs_tss_count != 0:
+			ratio = hs_tss_count/mhs_tss_count
+			if ratio > 1:
+				upregulated += 1
+			elif ratio < 1:
+				downregulated += 1
 
 	counts.append(downregulated)
 	counts.append(upregulated)
