@@ -33,7 +33,7 @@ NORM_DIR=$TAB_DIR/Normalized_tab_files
 
 if [ ! -d $NORM_DIR ]
 	then
-		python ../scripts/quantile_norm_singlebase_bin.py tab_files ../shared_files/sacCer3.chrom.sizes
+		python ../scripts/quantile_norm_singlebase_bin.py $TAB_DIR ../shared_files/sacCer3.chrom.sizes
 fi
 
 CDT_DIR=CDT

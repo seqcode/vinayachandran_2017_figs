@@ -24,7 +24,7 @@ NORM_DIR=$TAB_DIR/Normalized_tab_files
 
 if [ ! -d $NORM_DIR ]
 	then
-		python ../scripts/quantile_norm_singlebase_bin.py tab_files_a ../shared_files/sacCer3.chrom.sizes
+		python ../scripts/quantile_norm_singlebase_bin.py $TAB_DIR ../shared_files/sacCer3.chrom.sizes
 fi
 
 OUT_DIRS=(a_divergent_CDT a_non-divergent_CDT)

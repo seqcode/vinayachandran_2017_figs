@@ -1,29 +1,55 @@
 set -e
 
-WD=$PWD
+SORT_FILE=sorted_list-RPG_SAGA-act-rep-no_TFIID-act-rep-no.txt
 
-SHARED_FILES=../shared_files
-if [ ! -d $SHARED_FILES ]
+if [ ! -e ../shared_files/$SORT_FILE ]
 	then
-		mkdir $SHARED_FILES
+		wget 	#TODO: add url
+		mv $SORT_FILE.gz ../shared_files
+		gunzip ../shared_files/$SORT_FILE.gz
 fi
 
-CHROM_INFO=../shared_files/sacCer3.chrom.sizes
-if [ ! -e $CHROM_INFO ]
+GFF=Xu_2009_RP-SAGA-TFIID_ONLY_TSS_ONLY_V64.gff
+
+if [ ! -e ../shared_files/$GFF ]
 	then
-		cd $SHARED_FILES
-		wget http://hgdownload-test.cse.ucsc.edu/goldenPath/sacCer3/bigZips/sacCer3.chrom.sizes
-		cd $WD
+		wget 	#TODO: add url
+		mv $GFF.gz ../shared_files
+		gunzip ../shared_files/$GFF.gz
 fi
 
-python ../scripts/quantile_norm_singlebase_bin.py tab_files_b $CHROM_INFO
+ALL_TAB=../GSE98573_RAW
 
-CDT_DIR=_CDT
-SORT_FILE=sorted_list-RPG_SAGA-act-rep-no_TFIID-act-rep-no.txt 
+if [ ! -d $ALL_TAB ]
+	then 
+		tar xvf $ALL_TAB.tar
+fi
+
+IDS=()		#TODO: add IDs
+TAB_DIR=tab_files_b
+
+if [ ! -d $TAB_DIR ]
+	then
+		mkdir $TAB_DIR
+
+		for ID in "${IDS[@]}"
+		do
+			cp $ALL_TAB/$ID"sacCer3".tab $TAB_DIR
+		done
+fi
+
+NORM_DIR=$TAB_DIR/Normalized_tab_files
+
+if [ ! -d $NORM_DIR ]
+	then
+		python ../scripts/quantile_norm_singlebase_bin.py $TAB_DIR ../shared_files/sacCer3.chrom.sizes
+fi
+
+CDT_DIR=b_CDT
 
 if [ ! -d $CDT_DIR ]
 	then
-		python ../scripts/map_shifted_tags_to_ref.py -u 500 -d 500 tab_files_b/Normalized_tab_files $SORT_FILE
+		python ../scripts/map_shifted_tags_to_ref.py -u 500 -d 500 -o $CDT_DIR $NORM_DIR $GFF
 fi
 
 python ../scripts/sort_cdt_by_given_file.py $CDT_DIR $SORT_FILE

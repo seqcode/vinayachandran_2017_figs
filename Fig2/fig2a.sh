@@ -1,6 +1,13 @@
 set -e
 
-SORT_FILE=	#TODO: add
+ALL_TAB=../GSE98573_RAW
+
+if [ ! -d $ALL_TAB ]
+	then 
+		tar xvf $ALL_TAB.tar
+fi
+
+SORT_FILE=ALL-RP-SAGA-TFIID-SUT-CUT-XUT_TSS-TES-MID_sortedby_geneLength.gff
 
 if [ ! -e ../shared_files/$SORT_FILE ]
 	then
@@ -9,16 +16,8 @@ if [ ! -e ../shared_files/$SORT_FILE ]
 		gunzip ../shared_files/$SORT_FILE.gz
 fi
 
-
-ALL_TAB=../GSE98573_RAW
-
-if [ ! -d $ALL_TAB ]
-	then 
-		tar xvf $ALL_TAB.tar
-fi
-
-IDS=()		#TODO: add IDs
-TAB_DIR=tab_files_b
+IDS=(50416 50513 50501 50525 53319 50428 50531 50519 54513 51825 53803)
+TAB_DIR=tab_files_a
 
 if [ ! -d $TAB_DIR ]
 	then
@@ -36,11 +35,12 @@ if [ ! -d $NORM_DIR ]
 	then
 		python ../scripts/quantile_norm_singlebase_bin.py $TAB_DIR ../shared_files/sacCer3.chrom.sizes
 fi
-CDT_DIR=b_CDT
+
+CDT_DIR=a_CDT
 
 if [ ! -d $CDT_DIR ]
 	then
-		python ../scripts/map_shifted_tags_to_ref.py -u 2000 -d 2000 -o $CDT_DIR tab_files_b/Normalized_tab_files $SORT_FILE
+		python ../scripts/map_shifted_tags_to_ref.py -u 2000 -d 2000 -o $CDT_DIR $NORM_DIR ../shared_files/$SORT_FILE
 fi
 
-python ../scripts/sort_cdt_by_given_file.py -o 2 $CDT_DIR $SORT_FILE 
+python ../scripts/sort_cdt_by_given_file.py -o 2 $CDT_DIR ../shared_files/$SORT_FILE 
