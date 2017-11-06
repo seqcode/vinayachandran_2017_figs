@@ -1,6 +1,26 @@
 set -e
 
-NORM_DIR=tab_files_a/Normalized_tab_files
+ALL_TAB=../GSE98573_RAW
+
+if [ ! -d $ALL_TAB ]
+	then 
+		tar xvf $ALL_TAB.tar
+fi
+
+IDS=(53301 59801 59084 50428 53302 59802 59805 50429 53303 59803 59806 50430 53824 53825 53826)
+TAB_DIR=tab_files_a
+
+if [ ! -d $TAB_DIR ]
+	then
+		mkdir $TAB_DIR
+
+		for ID in "${IDS[@]}"
+		do
+			cp $ALL_TAB/$ID"sacCer3".tab $TAB_DIR
+		done
+fi
+
+NORM_DIR=$TAB_DIR/Normalized_tab_files
 
 if [ ! -d $NORM_DIR ]
 	then
@@ -17,6 +37,13 @@ do
 	if [ ! -d $OUT_DIR ]
 		then
 			mkdir $OUT_DIR
+	fi
+
+	if [ ! -e ../shared_files/$GFF ]
+		then
+			wget 	#TODO: add url
+			mv $GFF.gz ../shared_files
+			gunzip ../shared_files/$GFF.gz
 	fi
 
 	python ../scripts/map_shifted_tags_to_ref.py -u 1000 -d 1000 -o $OUT_DIR $NORM_DIR ../shared_files/$GFF
