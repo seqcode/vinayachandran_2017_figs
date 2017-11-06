@@ -17,7 +17,7 @@ Example: python calculate_sum_from_columns.py 500 -150 150 outfile
 
 Created by Kuangyu Yen on 2012-04-27.
 Copyright (c) 2012 __PughLab@PSU__. All rights reserved.
-Edited by Lila Rieber on 10-11-2017
+Edited by Lila Rieber on 10-12-2017
 """
 
 import argparse, os, csv, operator

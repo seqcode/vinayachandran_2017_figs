@@ -1,28 +1,27 @@
 set -e
 
-WD=$PWD
+NORM_DIR=tab_files_b/Normalized_tab_files
 
-SHARED_FILES=../shared_files
-if [ ! -d $SHARED_FILES ]
+if [ ! -d $NORM_DIR ]
 	then
-		mkdir $SHARED_FILES
+		#python ../scripts/quantile_norm_singlebase_bin.py tab_files_b ../shared_files/sacCer3.chrom.sizes
+		python ~/Downloads/quantile_norm_singlebase_bin.py -g ../shared_files/sacCer3.chrom.sizes tab_files_b 	#TEST
 fi
 
-CHROM_INFO=../shared_files/sacCer3.chrom.sizes
-if [ ! -e $CHROM_INFO ]
+#CDT_DIR=b_CDT
+CDT_DIR=tab_files_b/_CDT	#TEST
+GFF=../shared_files/Hsf1-union-midpoint
+
+if [ ! -e $GFF.gff ]
 	then
-		cd $SHARED_FILES
-		wget http://hgdownload-test.cse.ucsc.edu/goldenPath/sacCer3/bigZips/sacCer3.chrom.sizes
-		cd $WD
+		sh ../scripts/csv_to_gff.sh $GFF
 fi
-
-python ../scripts/quantile_norm_singlebase_bin.py tab_files_b $CHROM_INFO
-
-CDT_DIR=_CDT
 
 if [ ! -d $CDT_DIR ]
 	then
-		python ../scripts/map_shifted_tags_to_ref.py -u 400 -d 400 tab_files_b/Normalized_tab_files  Hsf1-union-midpoint.gff
+		#python ../scripts/map_shifted_tags_to_ref.py -u 400 -d 400 -o $CDT_DIR tab_files_b/Normalized_tab_files $GFF.gff
+		python ~/Downloads/map_shifted_tags_to_ref.py -u 400 -d 400 -r $GFF.gff -l /usr/bin/ tab_files_b/Normalized_tab_files	#TEST
 fi
 
-python ../scripts/composite_plots.py -w 20 --shaded $CDT_DIR
+#python ../scripts/composite_plots.py -w 20 --shaded --normalize $CDT_DIR
+python ~/Downloads/Composite_plots_shaded_bxp_Vinesh.py -w 20 $CDT_DIR	#TEST

@@ -1,35 +1,29 @@
 set -e
 
-WD=$PWD
+FACTORS=(Ssl2 Rpb3)
+YLIMS=(2000 400)
+CONDITIONS=(activated nochange repressed_rp)
 
-SHARED_FILES=../shared_files
-if [ ! -d $SHARED_FILES ]
-	then
-		mkdir $SHARED_FILES
-fi
-
-CHROM_INFO=../shared_files/sacCer3.chrom.sizes
-if [ ! -e $CHROM_INFO ]
-	then
-		cd $SHARED_FILES
-		wget http://hgdownload-test.cse.ucsc.edu/goldenPath/sacCer3/bigZips/sacCer3.chrom.sizes
-		cd $WD
-fi
-
-python ../scripts/quantile_norm_singlebase_bin.py tab_files_a $CHROM_INFO
-
-OUT_DIRS=(activated nochange repressed_rp)
-GFFS=(activated.gff nochange.gff repressed_rp.gff)
-
-for i in `seq 0 ${#OUT_DIRS[@]}`
+for i in `seq 0 $((${#FACTORS[@]}-1))`
 do
-	OUT_DIR=${OUT_DIRS[$i]}
-	GFF=${GFFS[$i]}
-	if [ ! -d $OUT_DIR ]
+	FACTOR=${FACTORS[$i]}
+	YLIM=${YLIMS[$i]}
+	TAB_DIR=tab_files_a/$FACTOR
+	NORM_DIR=$TAB_DIR/Normalized_tab_files
+	if [ ! -d $NORM_DIR ]
 		then
-			mkdir $OUT_DIR
+			python ../scripts/quantile_norm_singlebase_bin.py $TAB_DIR ../shared_files/sacCer3.chrom.sizes
 	fi
 
-	python ../scripts/map_shifted_tags_to_ref.py -u 500 -d 500 -o $OUT_DIR tab_files_a/Normalized_tab_files $GFF
-	python ../scripts/composite_plots.py -w 20 $OUT_DIR
+	for CONDITION in "${CONDITIONS[@]}"
+	do
+		CDT_DIR=$NORM_DIR/$CONDITION
+		if [ ! -d $CDT_DIR ]
+			then
+				python ../scripts/map_shifted_tags_to_ref.py -u 500 -d 500 -o $CDT_DIR $NORM_DIR ../shared_files/$CONDITION.gff
+		fi
+
+		#python ../scripts/composite_plots.py -w 20 -y $YLIM $CDT_DIR
+		python ../scripts/composite_plots.py -w 20 $CDT_DIR
+	done
 done

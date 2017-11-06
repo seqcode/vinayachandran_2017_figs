@@ -1,29 +1,19 @@
 set -e
 
-WD=$PWD
+NORM_DIR=tab_files_a/Normalized_tab_files
 
-SHARED_FILES=../shared_files
-if [ ! -d $SHARED_FILES ]
+if [ ! -d $NORM_DIR ]
 	then
-		mkdir $SHARED_FILES
+		python ../scripts/quantile_norm_singlebase_bin.py tab_files_a ../shared_files/sacCer3.chrom.sizes
 fi
 
-CHROM_INFO=../shared_files/sacCer3.chrom.sizes
-if [ ! -e $CHROM_INFO ]
-	then
-		cd $SHARED_FILES
-		wget http://hgdownload-test.cse.ucsc.edu/goldenPath/sacCer3/bigZips/sacCer3.chrom.sizes
-		cd $WD
-fi
+CDT_DIR=a_CDT
 
-python ../scripts/quantile_norm_singlebase_bin.py tab_files_a $CHROM_INFO 
-
-CDT_DIR=_CDT
-
+#TODO: split by condition
 if [ ! -d $CDT_DIR ]
 	then
-		python ../scripts/map_shifted_tags_to_ref.py -u 200 -d 200 tab_files_a/Normalized_tab_files sorted_list-RPG_SAGA-act-rep-no_TFIID-act-rep-no.txt
+		python ../scripts/map_shifted_tags_to_ref.py -u 200 -d 200 -o $CDT_DIR $NORM_DIR ../shared_files/RP_137_genes_TSS_Xu_2009.gff
 
 fi
 
-python ../scripts/composite_plots.py -w 21 --shaded $CDT_DIR
+python ../scripts/composite_plots.py -w 21 --shaded --normalize $CDT_DIR
