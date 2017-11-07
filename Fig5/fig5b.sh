@@ -34,6 +34,7 @@ if [ ! -d $NORM_DIR ]
 	then
 		python ../scripts/quantile_norm_singlebase_bin.py $TAB_DIR ../shared_files/sacCer3.chrom.sizes
 fi
+
 CDT_DIR=b_CDT
 
 if [ ! -d $CDT_DIR ]
