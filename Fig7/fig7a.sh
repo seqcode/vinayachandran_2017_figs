@@ -44,4 +44,4 @@ if [ ! -d $CDT_DIR ]
 
 fi
 
-python ../scripts/composite_plots.py -w 21 --shaded --normalize $CDT_DIR
+python ../scripts/composite_plots.py -w 21 --normalize $CDT_DIR
