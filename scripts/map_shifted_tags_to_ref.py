@@ -57,7 +57,7 @@ def process_file(args):
         in1.close()
         out.close()
         intersect = os.path.join(args.outdir,"intersect.txt")
-        os.system(args.location+"intersectBed"+" -wao -a "+tmpref+" -b "+tmptab+" >"+intersect)
+	os.system(args.location+"intersectBed"+" -wo -a "+tmpref+" -b "+tmptab+" >"+intersect)
         
         # Remove tmptab as its not required anymore.
         os.system("rm "+tmptab)
@@ -72,7 +72,7 @@ def process_file(args):
 
 def process_intersect_file(infile,args,outcdt):
     cdt_dict = defaultdict(list)
-    in2 = open(infile,"rt")
+    in2 = open(infile)
     out = open(outcdt,"w")
     print_header(out,args)
     for line in in2:
@@ -89,6 +89,8 @@ def process_intersect_file(infile,args,outcdt):
             cdt_dict[cols[8]].append(str(new_dist)+":"+cols[14])
     in2.close()
     
+    print infile
+
     for k,v in cdt_dict.items():
         tmpdict = {}
         line = k+"\t1"
@@ -102,6 +104,9 @@ def process_intersect_file(infile,args,outcdt):
             pos = int(val.split(":")[0])
             tag = (val.split(":"))[1]
             tmpdict[pos] = tag
+            if tag == ".":
+                print v
+                sys.exit(0)
         for i in range((-1)*args.up,args.down+1):
             if i in tmpdict:
                 line = line+"\t"+tmpdict[i]
