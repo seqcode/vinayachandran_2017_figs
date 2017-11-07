@@ -49,7 +49,7 @@ CDT_DIR=CDT
 
 if [ ! -d $CDT_DIR ]
 	then
-		python ../scripts/map_shifted_tags_to_ref.py -u 500 -d 500 -o $CDT_DIR $NORM_DIR $GFF
+		python ../scripts/map_shifted_tags_to_ref.py -u 500 -d 500 -o $CDT_DIR $NORM_DIR ../shared_files/$GFF
 fi
 
-python ../scripts/sort_cdt_by_given_file.py -o 2 $CDT_DIR $SORT_FILE
+python ../scripts/sort_cdt_by_given_file.py $CDT_DIR ../shared_files/$SORT_FILE
