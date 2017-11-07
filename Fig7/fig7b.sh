@@ -25,7 +25,7 @@ if [ ! -d $ALL_TAB ]
 		tar xvf $ALL_TAB.tar
 fi
 
-IDS=(51829 51830 51831 56428 56429 56430)
+IDS=(51829 51830 51831 56422 56423 56424 56428 56429 56430)
 TAB_DIR=tab_files_b
 
 if [ ! -d $TAB_DIR ]
@@ -52,4 +52,4 @@ if [ ! -d $CDT_DIR ]
 		python ../scripts/map_shifted_tags_to_ref.py -u 1000 -d 1000 -o $CDT_DIR $NORM_DIR ../shared_files/$GFF
 fi
 
-python ../scripts/sort_cdt_by_given_file.py -o 2 $CDT_DIR ../shared_files/$SORT_FILE
+python ../scripts/sort_cdt_by_given_file.py $CDT_DIR ../shared_files/$SORT_FILE
