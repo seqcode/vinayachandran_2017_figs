@@ -7,7 +7,8 @@ def process_file(args):
     if not os.path.exists(args.outdir): os.makedirs(args.outdir)
      
     if not os.path.exists(args.input_directory):
-       parser.error('Path {} does not exist.'.format(args.input_directory))    
+       print 'Path {} does not exist.'.format(args.input_directory)
+       sys.exit(0)    
 
     idxDir=args.input_directory	
 
@@ -19,6 +20,8 @@ def process_file(args):
         if line.startswith("#") or line.startswith("chrom"):
             continue
         cols = line.rstrip().split("\t")
+	if len(cols) < 7:
+            continue
         if cols[6] == "+" or cols[6] == ".":
             start = int(cols[3]) - args.up
             end = int(cols[3]) + args.down
@@ -66,7 +69,6 @@ def process_file(args):
         
         # Remove intersect as its not required anymore.
         os.system("rm "+intersect)
-        
         
     os.system("rm "+tmpref)
 
