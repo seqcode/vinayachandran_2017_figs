@@ -7,7 +7,7 @@ if [ ! -d $ALL_TAB ]
 		tar xvf $ALL_TAB.tar
 fi
 
-IDS=(50430 50429)
+IDS=(50428 50429)
 TAB_DIR=tab_files_c
 
 if [ ! -d $TAB_DIR ]
@@ -26,5 +26,13 @@ if [ ! -d $NORM_DIR ]
 	then
 		python ../scripts/quantile_norm_singlebase_bin.py $TAB_DIR ../shared_files/sacCer3.chrom.sizes
 fi
+
+for TAB_FILE in $NORM_DIR/*
+do
+	for ORIENTATION in upstream downstream
+	do
+		python ../scripts/extract_tag_occupancy.py $TAB_FILE ../shared_files/"Hsf1-union-Xu-TSS-divergent-"$ORIENTATION.gff ../shared_files/sacCer3.chrom.sizes ${TAB_FILE%.*}$ORIENTATION.tsv 50 50
+	done
+done
 
 python fig4c.py
