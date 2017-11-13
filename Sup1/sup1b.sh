@@ -1,6 +1,6 @@
 set -e
 
-GFF=	#TODO: where is gff?
+GFF=Xu_2009_ORF_TSS_TES_V64.gff
 
 if [ ! -e ../shared_files/$GFF ]
 	then
@@ -40,7 +40,7 @@ CDT_DIR=b_CDT
 
 if [ ! -d $CDT_DIR ]
 	then
-		python ../scripts/map_shifted_tags_to_ref.py -u 200 -d 200 -o $CDT_DIR $NORM_DIR ../shared_files/$GFF
+		python ../scripts/map_shifted_tags_to_ref.py -u 100 -d 100 -o $CDT_DIR $NORM_DIR ../shared_files/$GFF
 fi
 
-python ../scripts/extract_tag_occupancy.py $FN 100 300	#TODO: what is fn
+python sup1b.py
