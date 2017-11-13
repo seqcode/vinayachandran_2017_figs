@@ -1,62 +1,56 @@
-import sys
+import argparse
 
-cdt_prefix = sys.argv[1]
-u = int(sys.argv[2])
-d = int(sys.argv[3])
+def extract_occupancy(tab_file, gff_file, genome_file, out_file, upstream, downstream):
+	#initialize tag counts with zeroes
+	tags = {}
+	with open(genome_file) as chrom_sizes:
+		for line in chrom_sizes:
+			data = line.strip().split()
+			chrom = data[0]
+			for i in range(1, int(data[1])):
+				key = "{}:{}".format(chrom, i)
+				tags[key] = 0
+		chrom_sizes.close()
 
-#x = {}
-#y = {}
-z = {}
+	#fill with tags at each genomic coordinate 
+	with open(tab_file) as tab:
+		for line in tab:
+			data = line.strip().split()
+			if data[0] != "#" and data[0] != "chrom":
+				chrom = data[0]
+				index = data[1]
+				key = "{}:{}".format(chrom, index)
+				tags[key] = float(data[4]) 
+		tab.close()
 
-cnt = 0
-with open("{}_forward.cdt".format(cdt_prefix)) as forward:
-	for line in forward:
-		data = line.strip().split("\t")
-		key = data[0].split(";")
-		cnt += 1
-		if cnt > 2:
-			#x.update({key[0]:data})
+	#get tag counts at each genomic feature
+	with open(out_file, "w") as out:
+		with open(gff_file) as gff:
+			for line in gff:
+				data = line.split()
+				chrom = data[0]
+				coord = int(data[3])
+				gene = data[8]
+				start = coord - upstream
+				end = coord + downstream
+				count = sum([tags["{}:{}".format(chrom, j)] for j in range(start,end)])
+				out.write("\t".join((gene, str(count))))
+				out.write("\n")
+			gff.close()
+		out.close()
+
+def main():
+	parser = argparse.ArgumentParser(description="Get tag occupancy in window surrounding each genomic feature.")
+	parser.add_argument("tab_file", help="path to tab file with tag counts")
+	parser.add_argument("gff_file", help="path to GFF file with genome features")
+	parser.add_argument("genome_file", help="path to file with chromosome sizes")
+	parser.add_argument("out_file", help="path to file to write to")
+	parser.add_argument("upstream", type=int, help="number of bp upstream of feature")
+	parser.add_argument("downstream", type=int, help="number of bp downstream of feature")
 	
-			cnt2 = 0
-			occ = 0.0
-			# 1003 is the TSS midpoint
-			start = 1003 + u
-			end = 1003 + d
-			for ele in data:
-				cnt2 += 1
-				# Polymerase Occupancy will be calculated by specific interval
-				# Rpb3 : -100 to 500
-				# Ssl2 : -200 to 200
-				# Sua7 : -200 to 200
-				if cnt2 > 2 and cnt2 >= start and cnt2 <= end:
-					occ += float(ele)
-			z.update({key[0]:[occ,0.0]})
-forward.close()
+	args = parser.parse_args()
 
-cnt = 0
-with open("{}_reverse.cdt".format(cdt_prefix)) as reverse:
-	for line in reverse:
-		data = line.strip().split("\t")
-		cnt += 1
-		if cnt > 2:
-			#y.update({data[0]:data})
-		
-			cnt2 = 0
-			occ = 0.0
-			for ele in data:
-				cnt2 += 1
-				if cnt2 > 2:
-					occ += float(ele)
-			try:
-				z[data[0]][1] = occ
-			except:
-				z.update({data[0]:[0.0,occ]})
-reverse.close()
+	extract_occupancy(args.tab_file, args.gff_file, args.genome_file, args.out_file, args.upstream, args.downstream)
 
-with open("{}_occupancy.txt".format(cdt_prefix), "w") as out:
-	for the_key in z:
-		if z[the_key][0] != 0.0 and z[the_key][1] != 0.0:
-			print "test"
-			out.write(",".join((the_key, str(z[the_key][0]), str(z[the_key][1]))))
-			out.write("\n")
-out.close()
+if __name__ == "__main__":
+	main()
