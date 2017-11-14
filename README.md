@@ -33,7 +33,6 @@ fig4b.sh | b_CDT/_composite/composite_plot_all_factors.svg
 fig4c.sh | Fig4C.png
 fig5a.sh | a_CDT/_composite/composite_plot_all_factors.svg
 fig5b.sh | b_CDT/_composite/composite_plot_all_factors.svg
-fig5c.sh | polyA_CDT/_composite/composite_plot_all_factors.svg; polyT_CDT/_composite/composite_plot_all_factors.svg
 fig6a.sh | a_CDT/_composite/composite_plot_all_factors.svg
 fig6b.sh | b_CDT/_composite/composite_plot_all_factors.svg
 fig7a.sh | a_CDT/_composite/composite_plot_all_factors.svg
