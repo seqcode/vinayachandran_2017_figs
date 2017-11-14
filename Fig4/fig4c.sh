@@ -1,5 +1,7 @@
 set -e
 
+sh ../scripts/get_chrom_sizes.sh
+
 ALL_TAB=../GSE98573_RAW
 
 if [ ! -d $ALL_TAB ]
@@ -31,7 +33,14 @@ for TAB_FILE in $NORM_DIR/*
 do
 	for ORIENTATION in upstream downstream
 	do
-		python ../scripts/extract_tag_occupancy.py $TAB_FILE ../shared_files/"Hsf1-union-Xu-TSS-divergent-"$ORIENTATION.gff ../shared_files/sacCer3.chrom.sizes ${TAB_FILE%.*}$ORIENTATION.tsv 50 50
+		GFF="Hsf1-union-Xu-TSS-divergent-"$ORIENTATION.gff
+		if [ ! -e $GFF ]
+		then
+			wget 	#TODO: add url
+			gunzip $GFF.gz
+		fi		
+
+		python ../scripts/extract_tag_occupancy.py $TAB_FILE $GFF ../shared_files/sacCer3.chrom.sizes ${TAB_FILE%.*}$ORIENTATION.tsv 50 50
 	done
 done
 

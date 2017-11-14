@@ -1,11 +1,12 @@
 set -e
 
+sh ../scripts/get_chrom_sizes.sh
+
 GFF=HS_activated_nuc1.gff
-if [ ! -e ../shared_files/$GFF ]
+if [ ! -e $GFF ]
 	then
 		wget 	#TODO: add url
-		mv $GFF.gz ../shared_files
-		gunzip ../shared_files/$GFF.gz
+		gunzip $GFF.gz
 fi
 
 ALL_TAB=../GSE98573_RAW
@@ -39,7 +40,7 @@ CDT_DIR=b_CDT
 
 if [ ! -d $CDT_DIR ]
 	then
-		python ../scripts/map_shifted_tags_to_ref.py -u 1000 -d 1000 -o $CDT_DIR $NORM_DIR ../shared_files/$GFF
+		python ../scripts/map_shifted_tags_to_ref.py -u 1000 -d 1000 -o $CDT_DIR $NORM_DIR $GFF
 fi
 
-python ../scripts/composite_plots.py -w 20 --shaded $CDT_DIR
+python ../scripts/composite_plots.py -w 20 $CDT_DIR

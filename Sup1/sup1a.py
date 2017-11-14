@@ -37,7 +37,30 @@ for i, gene in enumerate(genes):
 	for j, count_sum in enumerate(sums):
 		all_sums[j,i] = count_sum
 
+labels = {}
+labels["19325sacCer3_.cdt"] = 0
+labels["19339sacCer3_.cdt"] = 0
+labels["50519sacCer3_.cdt"] = 0
+labels["32321sacCer3_.cdt"] = 3
+labels["50520sacCer3_.cdt"] = 3
+labels["32322sacCer3_.cdt"] = 6
+labels["50521sacCer3_.cdt"] = 6
+labels["32323sacCer3_.cdt"] = 9
+labels["50522sacCer3_.cdt"] = 9
+labels["32324sacCer3_.cdt"] = 12
+labels["50523sacCer3_.cdt"] = 12
+labels["32325sacCer3_.cdt"] = 15
+labels["50524sacCer3_.cdt"] = 15
+
 pca = PCA(n_components=2)
 principal_components = pca.fit_transform(all_sums)
-plt.scatter(principal_components[:,0], principal_components[:,1])
-plt.show()
+fig, ax = plt.subplots()
+xs = principal_components[:,0]
+ys = principal_components[:,1]
+ax.scatter(xs, ys)
+for i, file_name in enumerate(file_names):
+	ax.annotate(labels[file_name], (xs[i], ys[i]))
+plt.xlabel("PC1")
+plt.ylabel("PC2")
+plt.title("ChIP-exo: TFIIH (Ssl2)")
+plt.savefig("Sup1a")

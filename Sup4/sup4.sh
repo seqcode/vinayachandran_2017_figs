@@ -1,12 +1,13 @@
 set -e
 
+sh ../scripts/get_chrom_sizes.sh
+
 GFF=TFIID-nochange_TSS_Xu_2009_ORF_PURE_SET.gff
 
-if [ ! -e ../shared_files/$GFF ]
+if [ ! -e $GFF ]
 	then
 		wget 	#TODO: add url
-		mv $GFF.gz ../shared_files
-		gunzip ../shared_files/$GFF.gz
+		gunzip $GFF.gz
 fi
 
 ALL_TAB=../GSE98573_RAW
@@ -30,23 +31,23 @@ if [ ! -d $TAB_DIR ]
 fi
 
 #get TFIIH occupancy
-#OCCUPANCY_FILE=TFIIH_occupancy.tsv
-#python ../scripts/extract_tag_occupancy.py 19325sacCer3.tab ../shared_files/$GFF ../shared_files/sacCer3.chrom.sizes $OCCUPANCY_FILE 100 100
+OCCUPANCY_FILE=TFIIH_occupancy.tsv
+python ../scripts/extract_tag_occupancy.py 19325sacCer3.tab $GFF ../shared_files/sacCer3.chrom.sizes $OCCUPANCY_FILE 100 100
 
 #sort occupancy file
-#SORTED_FILE=sorted_TFIIH_genes.tsv
-#sort -k 2 -n $OCCUPANCY_FILE | awk '{print $1}' > $SORTED_FILE
-#QUARTER_LENGTH=$(($(cat $SORTED_FILE | wc -l)/4))
-#cat $SORTED_FILE | head -$QUARTER_LENGTH > bottom_25percent.txt
-#cat $SORTED_FILE | tail -$QUARTER_LENGTH > top_25percent.txt
+SORTED_FILE=sorted_TFIIH_genes.tsv
+sort -k 2 -n $OCCUPANCY_FILE | awk '{print $1}' > $SORTED_FILE
+QUARTER_LENGTH=$(($(cat $SORTED_FILE | wc -l)/4))
+cat $SORTED_FILE | head -$QUARTER_LENGTH > bottom_25percent.txt
+cat $SORTED_FILE | tail -$QUARTER_LENGTH > top_25percent.txt
 
 #convert gene lists to GFF
-#python ../scripts/genes_from_gff.py ../shared_files/$GFF bottom_25percent.txt
-#python ../scripts/genes_from_gff.py ../shared_files/$GFF top_25percent.txt
+python genes_from_gff.py $GFF bottom_25percent.txt
+python genes_from_gff.py $GFF top_25percent.txt
 
 #map to each GFF
-#python ../scripts/map_shifted_tags_to_ref.py -u 500 -d 500 -o bottom25 tab_files bottom_25percent.gff
-#python ../scripts/map_shifted_tags_to_ref.py -u 500 -d 500 -o top25 tab_files top_25percent.gff
+python ../scripts/map_shifted_tags_to_ref.py -u 500 -d 500 -o bottom25 tab_files bottom_25percent.gff
+python ../scripts/map_shifted_tags_to_ref.py -u 500 -d 500 -o top25 tab_files top_25percent.gff
 
 #make composite plots
 python ../scripts/composite_plots.py --normalize bottom25

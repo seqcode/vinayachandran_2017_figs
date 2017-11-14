@@ -21,9 +21,9 @@ def process_file(infile):
 	noL = 0
 	with open(infile) as in_sense:
 		for line in in_sense:
-			if line.startswith("Uniqe") or line.startswith("ID") or line.startswith("gene"):
+			if line.startswith("Uniqe") or line.startswith("gene"):
 				tmp = line.rstrip().split("\t")[2:]
-				X = [int(x) for x in tmp]
+				X = [float(x) for x in tmp]
 				xmin = min(X)
 				xmax = max(X)
 				Y = [0]*len(X)
@@ -34,7 +34,7 @@ def process_file(infile):
 			newList = [float(x) for x in tmplist]
 			Y = map(add,Y,newList)
 		in_sense.close()
-	
+
 	return X, Y, xmin, xmax, noL	
 
 def plot_graph(X, Y1, Y2, xmin, xmax, window_size, y, shaded, normalize, ax, label, count, noL):
@@ -60,7 +60,7 @@ def plot_graph(X, Y1, Y2, xmin, xmax, window_size, y, shaded, normalize, ax, lab
 		if Y2 is not None:
 			Y2 = [float(x)/max(Y2) for x in Y2]
 
-	if shaded:	 
+	if shaded:
 		ax.plot(X, Y1, color=colors[count],label=label,lw=3.0, zorder=2)
 		ax.fill_between(X,Y1,0,facecolor=colors[count],edgecolor=colors[count])	
 	else: 

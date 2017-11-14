@@ -1,5 +1,7 @@
 set -e
 
+sh ../scripts/get_chrom_sizes.sh
+
 ALL_TAB=../GSE98573_RAW
 
 if [ ! -d $ALL_TAB ]

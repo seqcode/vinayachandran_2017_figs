@@ -36,4 +36,3 @@ for file_name in os.listdir("b_CDT"):
 	plt.ylabel("Transcription rate (mRNA/hr)\n(log2)")
 	plt.title("n={}\nR={}".format(len(xs), r))
 	plt.savefig(file_name[0:len(file_name)-4])
-	plt.show()			

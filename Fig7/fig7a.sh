@@ -1,5 +1,7 @@
 set -e
 
+sh ../scripts/get_chrom_sizes.sh
+
 GFF=RP_137_genes_TSS_Xu_2009.gff
 if [ ! -e ../shared_files/$GFF ]
 	then

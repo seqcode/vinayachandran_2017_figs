@@ -1,5 +1,7 @@
 set -e
 
+sh ../scripts/get_chrom_sizes.sh
+
 ALL_TAB=../GSE98573_RAW
 
 if [ ! -d $ALL_TAB ]
@@ -39,13 +41,12 @@ do
 			mkdir $OUT_DIR
 	fi
 
-	if [ ! -e ../shared_files/$GFF ]
+	if [ ! -e $GFF ]
 		then
 			wget 	#TODO: add url
-			mv $GFF.gz ../shared_files
-			gunzip ../shared_files/$GFF.gz
+			gunzip $GFF.gz
 	fi
 
-	python ../scripts/map_shifted_tags_to_ref.py -u 1000 -d 1000 -o $OUT_DIR $NORM_DIR ../shared_files/$GFF
-	python ../scripts/sort_cdt_by_given_file.py -o 2 $OUT_DIR ../shared_files/$GFF
+	python ../scripts/map_shifted_tags_to_ref.py -u 1000 -d 1000 -o $OUT_DIR $NORM_DIR $GFF
+	python ../scripts/sort_cdt_by_given_file.py -o 2 $OUT_DIR $GFF
 done

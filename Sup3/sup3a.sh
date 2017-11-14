@@ -1,5 +1,7 @@
 set -e
 
+sh ../get_chrom_sizes.sh
+
 ALL_TAB=../GSE98573_RAW
 
 if [ ! -d $ALL_TAB ]
@@ -43,17 +45,16 @@ do
 		CONDITION=${CONDITIONS[$j]}
 
 		GFF=$CONDITION.gff
-		if [ ! -e ../shared_files/$GFF ]
+		if [ ! -e $GFF ]
 			then
 				wget $URL
-				mv $GFF.gz ../shared_files
-				gunzip ../shared_files/$GFF.gz
+				gunzip $GFF.gz
 		fi
 
-		CDT_DIR=$NORM_DIR/$CONDITION
+		CDT_DIR=$FACTOR_DIR/$CONDITION
 		if [ ! -d $CDT_DIR ]
 			then
-				python ../scripts/map_shifted_tags_to_ref.py -u 500 -d 500 -o $CDT_DIR $NORM_DIR ../shared_files/$GFF
+				python ../scripts/map_shifted_tags_to_ref.py -u 500 -d 500 -o $CDT_DIR $NORM_DIR $GFF
 		fi
 
 		python ../scripts/composite_plots.py -w 20 -y $YLIM $CDT_DIR

@@ -1,5 +1,7 @@
 set -e
 
+sh ../scripts/get_chrom_sizes.sh
+
 SORT_FILE=sorted_list-RPG_SAGA-act-rep-no_TFIID-act-rep-no.txt
 
 if [ ! -e ../shared_files/$SORT_FILE ]

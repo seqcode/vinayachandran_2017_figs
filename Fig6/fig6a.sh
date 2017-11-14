@@ -1,5 +1,7 @@
 set -e
 
+sh ../scripts/get_chrom_sizes.sh
+
 GFF=Yeast_plus_one_sacCer3.gff
 if [ ! -e ../shared_files/$GFF ]
 	then
@@ -42,4 +44,4 @@ if [ ! -d $CDT_DIR ]
 		python ../scripts/map_shifted_tags_to_ref.py -u 500 -d 500 -o $CDT_DIR $NORM_DIR ../shared_files/$GFF
 fi
 
-python ../scripts/composite_plots.py -w 20 --shaded --normalize $CDT_DIR
+python ../scripts/composite_plots.py -w 20 --normalize $CDT_DIR

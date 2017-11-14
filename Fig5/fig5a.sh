@@ -1,11 +1,12 @@
 set -e
 
+sh ../scripts/get_chrom_sizes.sh
+
 GFF=TFIID_Plus_One_nucleosome_dyad.gff
-if [ ! -e ../shared_files/$GFF ]
+if [ ! -e $GFF ]
 	then
 		wget 	#TODO: add url
-		mv $GFF.gz ../shared_files
-		gunzip ../shared_files/$GFF.gz
+		gunzip $GFF.gz
 fi
 
 ALL_TAB=../GSE98573_RAW
@@ -32,15 +33,15 @@ NORM_DIR=$TAB_DIR/Normalized_tab_files
 
 if [ ! -d $NORM_DIR ]
 	then
-		python ../scripts/quantile_norm_singlebase_bin.py $TAB_DIR ../shared_files/sacCer3.chrom.sizes
+		python ../scripts/quantile_norm_singlebase_bin.py --stranded $TAB_DIR ../shared_files/sacCer3.chrom.sizes
 fi
 
 CDT_DIR=a_CDT
 
 if [ ! -d $CDT_DIR ]
 	then
-		python ../scripts/map_shifted_tags_to_ref.py -u 500 -d 500 -o $CDT_DIR $NORM_DIR ../shared_files/$GFF
+		python ../scripts/map_shifted_tags_to_ref.py -u 500 -d 500 -o $CDT_DIR $NORM_DIR $GFF
 
 fi
 
-python ../scripts/composite_plots.py -w 20 --shaded $CDT_DIR
+python ../scripts/composite_plots.py -w 20 $CDT_DIR

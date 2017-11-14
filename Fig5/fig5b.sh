@@ -1,5 +1,7 @@
 set -e
 
+sh ../scripts/get_chrom_sizes.sh
+
 GFF=Yeast_plus_one_sacCer3.gff
 if [ ! -e ../shared_files/$GFF ]
 	then
@@ -43,4 +45,4 @@ if [ ! -d $CDT_DIR ]
 
 fi
 
-python ../scripts/composite_plots.py -w 20 --shaded $CDT_DIR
+python ../scripts/composite_plots.py -w 20 $CDT_DIR

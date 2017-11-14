@@ -1,5 +1,7 @@
 set -e
 
+sh ../scripts/get_chrom_sizes.sh
+
 GFF=Xu_2009_ORF_TSS_TES_V64.gff
 
 if [ ! -e ../shared_files/$GFF ]

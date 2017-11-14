@@ -91,8 +91,6 @@ def process_intersect_file(infile,args,outcdt):
             cdt_dict[cols[8]].append(str(new_dist)+":"+cols[14])
     in2.close()
     
-    print infile
-
     for k,v in cdt_dict.items():
         tmpdict = {}
         line = k+"\t1"

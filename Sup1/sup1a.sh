@@ -1,5 +1,7 @@
 set -e
 
+sh ../scripts/get_chrom_sizes.sh
+
 TAB_DIR=tab_files_a
 
 NORM_DIR=$TAB_DIR/Normalized_tab_files
