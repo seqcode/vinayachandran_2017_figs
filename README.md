@@ -23,4 +23,5 @@ Note: the shell scripts check whether output files exist before running certain 
 
 script | output
 --- | ---
-fig1.sh | gene_CDT/factor/_composite/composite_plots_all_factors.svg; e.g. HSP42_CDT/Htz1/_composite/composite_plot_all_factors.svg
+fig1.sh | gene_CDT/factor/_composite/composite_plots_all_factors.svg
+e.g. HSP42_CDT/Htz1/_composite/composite_plot_all_factors.svg
