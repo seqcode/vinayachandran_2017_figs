@@ -3,7 +3,7 @@
 # Prerequisites
 
 * linux
-* python >= 2.7
+* python 2.7
     * numpy
     * scipy
     * matplotlib
