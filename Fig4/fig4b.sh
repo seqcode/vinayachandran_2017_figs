@@ -70,7 +70,7 @@ fimo --thresh 0.0001 meme_out/meme.txt sacCer3.fa
 perl matchGFFwithFIMO.pl cwpair_output_mode_f0u80d80b2/S_filtered.gff fimo_out/fimo.gff
 
 #calculate enrichment over control
-java -jar SignificanceTester_pugh_java1.7.jar --geninfo ../shared_files/sacCer3.info --format IDX --expt tab_files_b/$HSF1_ID"sacCer3".rmdup.tab --ctrl tab_files_b/control/notag.tab --gff $ID/peaks_with_motif.gff --q 0.05
+java -jar SignificanceTester_pugh_java1.7.jar --geninfo ../shared_files/sacCer3.chrom.sizes --format IDX --expt tab_files_b/$HSF1_ID"sacCer3".rmdup.tab --ctrl tab_files_b/control/notag.tab --gff cwpair_output_mode_f0u80d80b2/S_filtered_withmotif.gff --q 0.05
 
 
 NORM_DIR=$TAB_DIR/Normalized_tab_files
@@ -84,7 +84,7 @@ CDT_DIR=b_CDT
 
 if [ ! -d $CDT_DIR ]
 	then
-		python ../scripts/map_shifted_tags_to_ref.py -u 400 -d 400 -o $CDT_DIR $NORM_DIR signif_w50_q5.00e-02_minfold2.0/peaks_with_motif_signif_EXPERIMENT.gff
+		python ../scripts/map_shifted_tags_to_ref.py -u 400 -d 400 -o $CDT_DIR $NORM_DIR cwpair_output_mode_f0u80d80b2/signif_w50_q5.00e-02_minfold2.0/S_filtered_withmotif_signif_EXPERIMENT.gff
 fi
 
 python ../scripts/composite_plots.py -w 20 --normalize $CDT_DIR
