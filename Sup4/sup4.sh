@@ -31,15 +31,15 @@ if [ ! -d $TAB_DIR ]
 fi
 
 #get TFIIH occupancy
-OCCUPANCY_FILE=TFIIH_occupancy.tsv
-python ../scripts/extract_tag_occupancy.py 19325sacCer3.tab $GFF ../shared_files/sacCer3.chrom.sizes $OCCUPANCY_FILE 100 100
+python ../scripts/extract_tag_occupancy.py 19325sacCer3.tab $GFF ../shared_files/sacCer3.chrom.sizes TFIIH_occupancy.txt 100 100
 
 #sort occupancy file
-SORTED_FILE=sorted_TFIIH_genes.tsv
-sort -k 2 -n $OCCUPANCY_FILE | awk '{print $1}' > $SORTED_FILE
-QUARTER_LENGTH=$(($(cat $SORTED_FILE | wc -l)/4))
-cat $SORTED_FILE | head -$QUARTER_LENGTH > bottom_25percent.txt
-cat $SORTED_FILE | tail -$QUARTER_LENGTH > top_25percent.txt
+cat $GFF | awk '{print $9}' > genes.txt
+paste genes.txt TFIIH_occupancy.txt > TFIIH_occupancy_by_gene.tsv
+sort -k 2 -n TFIIH_occupancy_by_gene.tsv | awk '{print $1}' > sorted_TFIIH_genes.tsv
+QUARTER_LENGTH=$(($(cat sorted_TFIIH_genes.tsv | wc -l)/4))
+cat sorted_TFIIH_genes.tsv | head -$QUARTER_LENGTH > bottom_25percent.txt
+cat sorted_TFIIH_genes.tsv | tail -$QUARTER_LENGTH > top_25percent.txt
 
 #convert gene lists to GFF
 python genes_from_gff.py $GFF bottom_25percent.txt

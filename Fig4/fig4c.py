@@ -5,11 +5,8 @@ counts = []
 
 for orientation in ("upstream", "downstream"):
 	#tag counts at each TSS
-	mhs_tss_file = np.loadtxt("tab_files_c/Normalized_tab_files/50428sacCer3_{}.tsv".format(orientation), dtype=object)	
-	hs_tss_file = np.loadtxt("tab_files_c/Normalized_tab_files/50429sacCer3_{}.tsv".format(orientation), dtype=object)
-
-	mhs_tss_counts = np.array(mhs_tss_file[:,1], dtype=float)
-	hs_tss_counts = np.array(hs_tss_file[:,1], dtype=float)
+	mhs_tss_counts = np.loadtxt("tab_files_c/Normalized_tab_files/50428sacCer3_{}.txt".format(orientation))	
+	hs_tss_counts = np.loadtxt("tab_files_c/Normalized_tab_files/50429sacCer3_{}.txt".format(orientation))
 
 	#fold change
 	upregulated = 0
@@ -30,4 +27,3 @@ plt.xticks(range(len(counts)), ("Down", "Up", "Down", "Up"))
 plt.xlabel("HS-induced changes in TFIIB occupancy")
 plt.ylabel("# of genes")
 plt.savefig("Fig4C.png")
-plt.show()
