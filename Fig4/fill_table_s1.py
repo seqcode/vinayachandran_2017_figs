@@ -6,7 +6,10 @@ def fill_dict(path):
 	with open(path) as in_file:
 		for line in in_file:
 			line = line.strip().split()
-			dct[line[0]] = line[1]
+			if len(line) > 1:
+				dct[line[0]] = line[1]
+			else:
+				dct[line[0]] = None
 		in_file.close()
 	return dct
 
@@ -47,6 +50,7 @@ with open("motifs.fa") as fasta:
 			seq_dict[key] = line
 	fasta.close()
 
+gene_class_dict = fill_dict("gene_classes.tsv")
 divergent_dict = fill_dict("divergent_list.tsv")
 tfiib_mhs_occupancy_dict = fill_dict("TFIIB_MHS_occupancy.tsv")
 tfiib_hs3_occupancy_dict = fill_dict("TFIIB_HS3_occupancy.tsv")
@@ -74,9 +78,14 @@ for i, geneid in enumerate(geneids):
 			table[i,1] = "Two Hsf1 Motif_Hsf1-bound_Divergent Gene Pair" 
 
 	#TSS1 geneID
-	table[i,2] = geneid
+	if "%" in geneid:	#remove weird trailing characters
+		table[i,2] = geneid.split("%")[0]
+	else:
+		table[i,2] = geneid
 
-	#leave blank (Frank will fill)
+	#TSS1 gene class
+	if geneid in gene_class_dict.keys():
+		table[i,3] = gene_class_dict[geneid]
 
 	#TSS1 coordinate; fill from Xu
 	tss1_coord = int(xu_dict[geneid][3])
@@ -87,9 +96,14 @@ for i, geneid in enumerate(geneids):
 
 	#TSS2 geneID; fill from divergent list
 	divergentid = divergent_dict[geneid]
-	table[i,6] = divergentid 
+	if "%" in divergentid:	#remove weird trailing characters
+		table[i,6] = divergentid.split("%")[0]
+	else:
+		table[i,6] = divergentid
 
-	#leave blank (Frank will fill)
+	#TSS2 gene class
+	if divergentid != "None" and divergentid in gene_class_dict.keys():
+		table[i,7] = gene_class_dict[divergentid]
 
 	#TSS2 coordinate; fill from Xu
 	if divergentid != "None":
