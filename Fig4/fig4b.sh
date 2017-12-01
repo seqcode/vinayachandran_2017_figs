@@ -25,10 +25,8 @@ fi
 
 #TODO: get control
 
-HSF1_ID=53302
-
 #call peaks
-python ../scripts/chipexo/genetrack/genetrack.py -s 5 -e 20 tab_files_b/$HSF1_ID"sacCer3".rmdup.tab > genetrack_peaks.gff
+python ../scripts/chipexo/genetrack/genetrack.py -s 5 -e 20 tab_files_b/53302sacCer3.tab > genetrack_peaks.gff
 
 #filter out singletons
 python filter_singletons.py genetrack_peaks.gff filtered.gff
@@ -61,17 +59,18 @@ fi
 bedtools getfasta -fi sacCer3.fa -bed top_500_80bp.gff > top_500_80bp.fa
 
 #run MEME
-meme top_500_80bp.fa
+meme top_500_80bp.fa -dna -revcomp
 
-#find all bound sites with motif
+#find all genomic sites with motif
 fimo --thresh 0.0001 meme_out/meme.txt sacCer3.fa
 
 #center binding locations on significant motifs
 perl matchGFFwithFIMO.pl cwpair_output_mode_f0u80d80b2/S_filtered.gff fimo_out/fimo.gff
 
 #calculate enrichment over control
-java -jar SignificanceTester_pugh_java1.7.jar --geninfo ../shared_files/sacCer3.chrom.sizes --format IDX --expt tab_files_b/$HSF1_ID"sacCer3".rmdup.tab --ctrl tab_files_b/control/notag.tab --gff cwpair_output_mode_f0u80d80b2/S_filtered_withmotif.gff --q 0.05
+java -jar SignificanceTester_pugh_java1.7.jar --geninfo ../shared_files/sacCer3.chrom.sizes --format IDX --expt tab_files_b/53302sacCer3.tab --ctrl tab_files_b/control/notag.tab --gff cwpair_output_mode_f0u80d80b2/S_filtered_withmotif.gff --q 0.05 --minfold 1
 
+exit
 
 NORM_DIR=$TAB_DIR/Normalized_tab_files
 
@@ -84,7 +83,7 @@ CDT_DIR=b_CDT
 
 if [ ! -d $CDT_DIR ]
 	then
-		python ../scripts/map_shifted_tags_to_ref.py -u 400 -d 400 -o $CDT_DIR $NORM_DIR cwpair_output_mode_f0u80d80b2/signif_w50_q5.00e-02_minfold2.0/S_filtered_withmotif_signif_EXPERIMENT.gff
+		python ../scripts/map_shifted_tags_to_ref.py -u 400 -d 400 -o $CDT_DIR $NORM_DIR cwpair_output_mode_f0u80d80b2/signif_w50_q5.00e-02_minfold1.0/S_filtered_withmotif_signif_EXPERIMENT.gff
 fi
 
 python ../scripts/composite_plots.py -w 20 --normalize $CDT_DIR
