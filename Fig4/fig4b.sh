@@ -1,32 +1,23 @@
-#set -e
-
 sh ../scripts/get_chrom_sizes.sh
 
-ALL_TAB=../GSE98573_RAW
-
-if [ ! -d $ALL_TAB ]
-	then 
-		tar xvf $ALL_TAB.tar
-fi
-
-
-IDS=(50526 50429 53302)
 TAB_DIR=tab_files_b
+TAR=GSE98573_RAW.tar
 
 if [ ! -d $TAB_DIR ]
-	then
-		mkdir $TAB_DIR
-
-		for ID in "${IDS[@]}"
-		do
-			cp $ALL_TAB/$ID"sacCer3".tab $TAB_DIR
-		done
+	then 
+		mkdir $TAB_DIR	
+		mv $TAR $TAB_DIR
+		cd $TAB_DIR
+		tar xvf $TAR
+		rm $TAR
+		gunzip *.gz
+		mkdir control	#negative control is in separate directory so that it won't be processed
+		mv GSM2865467_15941sacCer3.tab control
+		cd ..
 fi
 
-#TODO: get control
-
 #call peaks
-python ../scripts/chipexo/genetrack/genetrack.py -s 5 -e 20 tab_files_b/53302sacCer3.tab > genetrack_peaks.gff
+python ../scripts/chipexo/genetrack/genetrack.py -s 5 -e 20 tab_files_b/GSM2601075_53302sacCer3.tab > genetrack_peaks.gff
 
 #filter out singletons
 python filter_singletons.py genetrack_peaks.gff filtered.gff
@@ -68,9 +59,7 @@ fimo --thresh 0.0001 meme_out/meme.txt sacCer3.fa
 perl matchGFFwithFIMO.pl cwpair_output_mode_f0u80d80b2/S_filtered.gff fimo_out/fimo.gff
 
 #calculate enrichment over control
-java -jar SignificanceTester_pugh_java1.7.jar --geninfo ../shared_files/sacCer3.chrom.sizes --format IDX --expt tab_files_b/53302sacCer3.tab --ctrl tab_files_b/control/notag.tab --gff cwpair_output_mode_f0u80d80b2/S_filtered_withmotif.gff --q 0.05 --minfold 1
-
-exit
+java -jar SignificanceTester_pugh_java1.7.jar --geninfo ../shared_files/sacCer3.chrom.sizes --format IDX --expt tab_files_b/GSM2601075_53302sacCer3.tab --ctrl tab_files_b/control/GSM2865467_15941sacCer3.tab --gff cwpair_output_mode_f0u80d80b2/S_filtered_withmotif.gff --q 0.05 --minfold 1
 
 NORM_DIR=$TAB_DIR/Normalized_tab_files
 

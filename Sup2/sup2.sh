@@ -2,30 +2,37 @@ set -e
 
 sh ../scripts/get_chrom_sizes.sh
 
-ALL_TAB=../GSE98573_RAW
+TAB_DIR=tab_files
+TAR=GSE98573_RAW.tar
 
-if [ ! -d $ALL_TAB ]
+if [ ! -d $TAB_DIR ]
 	then 
-		tar xvf $ALL_TAB.tar
+		mkdir $TAB_DIR	
+		mv $TAR $TAB_DIR
+		cd $TAB_DIR
+		tar xvf $TAR
+		rm $TAR
+		gunzip *.gz
+		cd ..
 fi
 
 FACTORS=(Ssl2 Spt3)
-ALL_IDS=([50519 50520 50521 50522 50523 50524] [50525 50526 50527 50528 50529 50530])
-TAB_DIR=tab_files
+ALL_IDS=(50519,50520,50521,50522,50523,50524 50525,50526,50527,50528,50529,50530)
 
 for i in `seq 0 $((${#FACTORS[@]}-1))`
 do
 	FACTOR=${FACTORS[$i]}
 	IDS=${ALL_IDS[$i]}
+	IDS_ARRAY=(${IDS//,/ })
 	FACTOR_DIR=$TAB_DIR/$FACTOR
 
 	if [ ! -d $FACTOR_DIR ]
 		then
 			mkdir $FACTOR_DIR
 
-			for ID in "${IDS[@]}"
+			for ID in "${IDS_ARRAY[@]}"
 			do
-				cp $ALL_TAB/$ID"sacCer3".tab $FACTOR_DIR
+				mv $TAB_DIR/*$ID"sacCer3".tab $FACTOR_DIR
 			done
 	fi
 
@@ -44,17 +51,11 @@ do
 		GENE_CLASS=${GENE_CLASSES[$j]}
 		GFF=${GFFS[$j]}
 
-		if [ ! -e $GFF ]
-			then
-				wget 	#TODO: add url
-				gunzip $GFF.gz
-		fi
-
 		OUT_DIR=$FACTOR_DIR/$GENE_CLASS
 
 		if [ ! -d $OUT_DIR ]
 			then
-				python ../scripts/map_shifted_tags_to_ref.py -u 500 -d 500 -o $OUT_DIR $NORM_DIR $GFF
+				python ../scripts/map_shifted_tags_to_ref.py -u 500 -d 500 -o $OUT_DIR $NORM_DIR ../shared_files/$GFF
 		fi
 		python ../scripts/composite_plots.py -w 20 $OUT_DIR
 	done

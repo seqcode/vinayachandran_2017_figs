@@ -3,6 +3,18 @@ set -e
 sh ../scripts/get_chrom_sizes.sh
 
 TAB_DIR=tab_files_a
+TAR=GSE98573_RAW.tar
+
+if [ ! -d $TAB_DIR ]
+	then 
+		mkdir $TAB_DIR	
+		mv $TAR $TAB_DIR
+		cd $TAB_DIR
+		tar xvf $TAR
+		rm $TAR
+		gunzip *.gz
+		cd ..
+fi
 
 NORM_DIR=$TAB_DIR/Normalized_tab_files
 

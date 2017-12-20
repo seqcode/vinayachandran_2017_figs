@@ -2,33 +2,18 @@ set -e
 
 sh ../scripts/get_chrom_sizes.sh
 
-GFF=Xu_2009_ORF_TSS_TES_V64.gff
-
-if [ ! -e ../shared_files/$GFF ]
-	then
-		wget 	#TODO: add url
-		mv $GFF.gz ../shared_files
-		gunzip ../shared_files/$GFF.gz
-fi
-
-ALL_TAB=../GSE98573_RAW
-
-if [ ! -d $ALL_TAB ]
-	then 
-		tar xvf $ALL_TAB.tar
-fi
-
-IDS=(53824 50519 50428)
 TAB_DIR=tab_files_b
+TAR=GSE98573_RAW.tar
 
 if [ ! -d $TAB_DIR ]
-	then
-		mkdir $TAB_DIR
-
-		for ID in "${IDS[@]}"
-		do
-			cp $ALL_TAB/$ID"sacCer3".tab $TAB_DIR
-		done
+	then 
+		mkdir $TAB_DIR	
+		mv $TAR $TAB_DIR
+		cd $TAB_DIR
+		tar xvf $TAR
+		rm $TAR
+		gunzip *.gz
+		cd ..
 fi
 
 NORM_DIR=$TAB_DIR/Normalized_tab_files
@@ -42,7 +27,14 @@ CDT_DIR=b_CDT
 
 if [ ! -d $CDT_DIR ]
 	then
-		python ../scripts/map_shifted_tags_to_ref.py -u 100 -d 100 -o $CDT_DIR $NORM_DIR ../shared_files/$GFF
+		python ../scripts/map_shifted_tags_to_ref.py -u 100 -d 100 -o $CDT_DIR $NORM_DIR ../shared_files/Xu_2009_ORF_TSS_TES_V64.gff
+fi
+
+if [ ! -e holstege.tsv ] 
+	then
+		wget http://younglab.wi.mit.edu/pub/data/orf_transcriptome.txt
+		cat orf_transcriptome.txt | awk '$1 != "ORF" && $4 != "#N/A" {print $1"\t"$4}' > holstege.tsv
+		rm orf_transcriptome.txt
 fi
 
 python sup1b.py

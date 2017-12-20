@@ -2,32 +2,18 @@ set -e
 
 sh ../scripts/get_chrom_sizes.sh
 
-GFF=RP_137_genes_TSS_Xu_2009.gff
-if [ ! -e ../shared_files/$GFF ]
-	then
-		wget 	#TODO: add url
-		mv $GFF.gz ../shared_files
-		gunzip ../shared_files/$GFF.gz
-fi
-
-ALL_TAB=../GSE98573_RAW
-
-if [ ! -d $ALL_TAB ]
-	then 
-		tar xvf $ALL_TAB.tar
-fi
-
-IDS=(56422 56428 56423 56429 56424 56430)
 TAB_DIR=tab_files_a
+TAR=GSE98573_RAW.tar
 
 if [ ! -d $TAB_DIR ]
-	then
-		mkdir $TAB_DIR
-
-		for ID in "${IDS[@]}"
-		do
-			cp $ALL_TAB/$ID"sacCer3".tab $TAB_DIR
-		done
+	then 
+		mkdir $TAB_DIR	
+		mv $TAR $TAB_DIR
+		cd $TAB_DIR
+		tar xvf $TAR
+		rm $TAR
+		gunzip *.gz
+		cd ..
 fi
 
 NORM_DIR=$TAB_DIR/Normalized_tab_files
@@ -42,7 +28,7 @@ CDT_DIR=a_CDT
 #TODO: split by condition
 if [ ! -d $CDT_DIR ]
 	then
-		python ../scripts/map_shifted_tags_to_ref.py -u 200 -d 200 -o $CDT_DIR $NORM_DIR ../shared_files/$GFF
+		python ../scripts/map_shifted_tags_to_ref.py -u 200 -d 200 -o $CDT_DIR $NORM_DIR ../shared_files/RP_137_genes_TSS_Xu_2009.gff
 
 fi
 
