@@ -14,7 +14,7 @@
 * [MEME suite](http://meme-suite.org/doc/install.html?man_type=web)
 
 # Use
-Each directory contains shell scripts to create each figure panel. For example, go to Fig4 and run fig4a.sh to create Fig. 4A. 
+Download tab files from the [GEO repository](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE98573) (this must be done manually). Go to the GSE98573\_RAW.tar custom download. Select the appropriate tab files for the figure panel based on Table S1, and download. Move GSE98573\_RAW.tar to the appropriate directory. For example, if you wanted to create Fig. 4B, move GSE98573\_RAW.tar to vinayachandran\_2017\_figs/Fig4. Do not untar. Then run fig4b.sh. 
 
 Most images are automatically created. However, heatmaps must be created manually. Open a sorted CDT (see below) with [TreeView](http://jtreeview.sourceforge.net/). Settings > Pixel Settings. Set global X and Y to Fill. Set zero to white. Adjust contrast as needed. 
 
@@ -28,9 +28,7 @@ fig1.sh | gene_CDT/factor/_composite/composite_plots_all_factors.svg; e.g. HSP42
 fig2a.sh | a_CDT/sorted/IDsacCer3_.cdt; e.g. a_CDT/sorted/50519sacCer3_.cdt
 fig2b.sh | b_CDT/sorted/IDsacCer3_.cdt; e.g. b_CDT/sorted/50417sacCer3_.cdt
 fig3.sh | CDT/sorted/IDsacCer3_.cdt; e.g. CDT/sorted/50428sacCer3_.cdt
-fig4a.sh | a_divergent_CDT/sorted/IDsacCer3_.cdt; a_non-divergent_CDT/sorted/IDsacCer3_.cdt; e.g. a_divergent_CDT/sorted/59806sacCer3_.cdt
 fig4b.sh | b_CDT/_composite/composite_plot_all_factors.svg
-fig4c.sh | Fig4C.png
 fig5a.sh | a_CDT/_composite/composite_plot_all_factors.svg
 fig5b.sh | b_CDT/_composite/composite_plot_all_factors.svg
 fig6a.sh | a_CDT/_composite/composite_plot_all_factors.svg
