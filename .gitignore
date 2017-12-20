@@ -1,6 +1,5 @@
 *.tab
 *.pyc
-*.gff
 *.cdt
 *.svg
 *.txt
