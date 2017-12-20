@@ -2,11 +2,18 @@ set -e
 
 sh ../scripts/get_chrom_sizes.sh
 
-ALL_TAB=../GSE98573_RAW
+TAB_DIR=tab_files
+TAR=GSE98573_RAW.tar
 
-if [ ! -d $ALL_TAB ]
+if [ ! -d $TAB_DIR ]
 	then 
-		tar xvf $ALL_TAB.tar
+		mkdir $TAB_DIR	
+		mv $TAR $TAB_DIR
+		cd $TAB_DIR
+		tar xvf $TAR
+		rm $TAR
+		gunzip *.gz
+		cd ..
 fi
 
 GFF=Xu_2009_ORF_TSS_TES_V64.gff
@@ -18,15 +25,14 @@ if [ ! -e ../shared_files/$GFF ]
 		gunzip ../shared_files/$GFF.gz
 fi
 
-TAB_DIR=tab_files
-
 STRANDED_FACTORS=(SAGA Hsf1 TFIIB TFIIH FACT PolII Ser7p Ser5p Ser2p)
-ALL_STRANDED_IDS=([50525 50526] [53301 53302] [50428 50429] [50519 50520] [53407 53408] [53824 53825] [53814 53815] [53811 53812] [53809 53810])
+ALL_STRANDED_IDS=(50525,50526 53301,53302 50428,50429 50519,50520 53407,53408 53824,53825 53814,53815 53811,53812 53809,53810)
 
 for i in `seq 0 $((${#STRANDED_FACTORS[@]}-1))`
 do
 	FACTOR=${STRANDED_FACTORS[$i]}
 	IDS=${ALL_STRANDED_IDS[$i]}
+	IDS_ARRAY=(${IDS//,/ })
 
 	FACTOR_DIR=$TAB_DIR/$FACTOR
 
@@ -34,9 +40,9 @@ do
 		then
 			mkdir $FACTOR_DIR
 
-			for ID in "${IDS[@]}"
+			for ID in "${IDS_ARRAY[@]}"
 			do
-				cp $ALL_TAB/$ID"sacCer3".tab $FACTOR_DIR
+				mv $TAB_DIR/*_$ID"sacCer3".tab $FACTOR_DIR
 			done
 	fi
 
@@ -50,12 +56,13 @@ do
 done
 
 UNSTRANDED_FACTORS=(Htz1 PIP-seq)
-ALL_UNSTRANDED_IDS=([50416 50417] [56422 56423])
+ALL_UNSTRANDED_IDS=(50416,50417 56422,56423)
 
 for i in `seq 0 $((${#UNSTRANDED_FACTORS[@]}-1))`
 do
 	FACTOR=${UNSTRANDED_FACTORS[$i]}
 	IDS=${ALL_UNSTRANDED_IDS[$i]}
+	IDS_ARRAY=(${IDS//,/ })
 
 	FACTOR_DIR=$TAB_DIR/$FACTOR
 
@@ -63,9 +70,9 @@ do
 		then
 			mkdir $FACTOR_DIR
 
-			for ID in "${IDS[@]}"
+			for ID in "${IDS_ARRAY[@]}"
 			do
-				cp $ALL_TAB/$ID"sacCer3".tab $FACTOR_DIR
+				mv $TAB_DIR/*_$ID"sacCer3".tab $FACTOR_DIR
 			done
 	fi
 
