@@ -18,13 +18,6 @@ fi
 
 GFF=Xu_2009_ORF_TSS_TES_V64.gff
 
-if [ ! -e ../shared_files/$GFF ]
-	then
-		wget 	#TODO: add url
-		mv $GFF.gz ../shared_files
-		gunzip ../shared_files/$GFF.gz
-fi
-
 STRANDED_FACTORS=(SAGA Hsf1 TFIIB TFIIH FACT PolII Ser7p Ser5p Ser2p)
 ALL_STRANDED_IDS=(50525,50526 53301,53302 50428,50429 50519,50520 53407,53408 53824,53825 53814,53815 53811,53812 53809,53810)
 
