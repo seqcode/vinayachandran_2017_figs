@@ -36,7 +36,7 @@ fig6b.sh | b_CDT/_composite/composite_plot_all_factors.svg
 fig7a.sh | a_CDT/_composite/composite_plot_all_factors.svg
 fig7b.sh | b_CDT/sorted/IDsacCer3_.cdt; e.g. b_CDT/sorted/51831sacCer3_.cdt
 sup1a.sh | Sup1a.png
-sup1b.sh | Transcription rate (mRNA per hr)_IDsacCer3_.png; e.g. Transcription rate (mRNA per hr)_50428sacCer3_.png
+sup1b.sh | Transcription rate (mRNA per hr)\_IDsacCer3\_.png; e.g. Transcription rate (mRNA per hr)\_50428sacCer3_.png
 sup1c.sh | Transcription (mRNA)_GSM2601035_50519sacCer.png
 sup2.sh | tab_files/factor/geneclass/_composite/composite_plot_all_factors.svg; e.g. tab_files/Spt3/RP/_composite/composite_plot_all_factors.svg
 sup3a.sh | tab_files_a/factor/gene_classification/_composite/composite_plot_all_factors.svg; e.g. tab_files_a/Hsf1/activated/_composite/composite_plot_all_factors.svg
